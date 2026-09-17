@@ -5,7 +5,6 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import ServicesSection from "@/components/ServicesSection";
-import QuoteCalculator from "@/components/QuoteCalculator";
 import ScientificApproach from "@/components/ScientificApproach";
 import HowItWorks from "@/components/HowItWorks";
 import StatsCounter from "@/components/StatsCounter";
@@ -42,9 +41,6 @@ export default function LandingPage() {
 
         {/* Scientific Vision Approach & Testimonials */}
         <ScientificApproach onOpenOrderModal={() => handleOpenOrderModal("Transcription")} />
-
-        {/* Interactive Quote Calculator */}
-        <QuoteCalculator onOpenOrderModal={handleOpenOrderModal} />
 
         {/* How It Works (Step-by-step Process) */}
         <HowItWorks onOpenOrderModal={() => handleOpenOrderModal("Interpretation")} />

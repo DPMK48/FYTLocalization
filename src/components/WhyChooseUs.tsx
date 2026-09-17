@@ -19,9 +19,8 @@ export default function WhyChooseUs({ onOpenOrderModal }: WhyChooseUsProps) {
     {
       icon: Clock,
       title: "Fast Turnaround",
-      subtitle: "Lightning-Fast Execution",
-      description:
-        "We understand the critical importance of project deadlines. Our global network operates around the clock to deliver high-quality outputs promptly, with express delivery options within 12–24 hours.",
+      subtitle: "Fast Delivery",
+      description: "Prompt, deadline-driven delivery with 12–24h express turnaround.",
       highlight: "< 24h Express Available",
       topBorder: "bg-blue-600",
       accentBg: "bg-blue-50 text-blue-600 border-blue-200",
@@ -29,9 +28,8 @@ export default function WhyChooseUs({ onOpenOrderModal }: WhyChooseUsProps) {
     {
       icon: Users,
       title: "Professional Freelancers",
-      subtitle: "Vetted Native Specialists",
-      description:
-        "Our team consists of experienced, certified native linguists and subject matter experts in translation, technical transcription, court interpretation, and media subtitling across 100+ language pairs.",
+      subtitle: "Native Specialists",
+      description: "Vetted native linguists covering over 100+ language pairs.",
       highlight: "100+ Native Linguists",
       topBorder: "bg-teal-500",
       accentBg: "bg-teal-50 text-teal-700 border-teal-200",
@@ -39,9 +37,8 @@ export default function WhyChooseUs({ onOpenOrderModal }: WhyChooseUsProps) {
     {
       icon: Award,
       title: "Customer Satisfaction",
-      subtitle: "100% Quality Guarantee",
-      description:
-        "We prioritize our clients' precise cultural and contextual requirements, offering multi-stage quality assurance (QA), terminology management, and complimentary revisions until complete satisfaction.",
+      subtitle: "Guaranteed Quality",
+      description: "Rigorous multi-stage quality assurance and verified accuracy.",
       highlight: "100% Guaranteed QA",
       topBorder: "bg-indigo-600",
       accentBg: "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -49,10 +46,10 @@ export default function WhyChooseUs({ onOpenOrderModal }: WhyChooseUsProps) {
   ];
 
   const valuePoints = [
-    "Native cultural adaptation, not just literal word translation",
-    "Stringent confidentiality and enterprise NDA protection",
-    "Transparent per-word and per-minute flat rates without hidden fees",
-    "Dedicated human project manager for all custom enterprise orders",
+    "Native cultural adaptation",
+    "Confidentiality & NDA protection",
+    "Transparent flat rates",
+    "Dedicated project coordinator",
   ];
 
   return (
@@ -71,10 +68,7 @@ export default function WhyChooseUs({ onOpenOrderModal }: WhyChooseUsProps) {
               <span className="text-blue-600">Affordable Prices.</span>
             </h2>
             <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-              At FYTLOCALIZATION, we believe in bridging gaps and connecting people
-              across the globe through the power of language. Whether you’re an
-              expanding international enterprise, media house, or individual in need of
-              accurate language support, we deliver tailored excellence.
+              Tailored language solutions bridging communication worldwide with accuracy, speed, and cultural precision.
             </p>
           </div>
 

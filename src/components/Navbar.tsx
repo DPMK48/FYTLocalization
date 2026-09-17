@@ -2,94 +2,94 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X } from "lucide-react";
 
 interface NavbarProps {
-  onOpenOrderModal: (serviceName?: string) => void;
+  onOpenOrderModal?: (serviceName?: string) => void;
 }
 
 export default function Navbar({ onOpenOrderModal }: NavbarProps) {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("Home");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
+  // Check auth state on mount and route change
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
+    if (typeof window !== "undefined") {
+      // If user directly navigates to authenticated routes, keep them logged in
+      if (pathname.startsWith("/profile") || pathname.startsWith("/dashboard")) {
+        localStorage.setItem("fyt_logged_in", "true");
+        setIsLoggedIn(true);
       } else {
-        setScrolled(false);
+        const logged = localStorage.getItem("fyt_logged_in") === "true";
+        setIsLoggedIn(logged);
       }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    }
+  }, [pathname]);
 
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("fyt_logged_in");
+      localStorage.removeItem("fyt_user_role");
+      setIsLoggedIn(false);
+      router.push("/login");
+    }
+  };
+
+  // Base links: Dashboard ONLY displays when user is logged in
   const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "Dashboard", href: "https://fytlocalization.com/login" },
-    { name: "Contact Us", href: "#contact" },
-    { name: "Blog", href: "https://fytlocalization.com/blog/" },
-    { name: "Services", href: "#services" },
-    { name: "Order Now", href: "#calculator", isOrderNow: true },
+    { name: "Home", href: "/" },
+    ...(isLoggedIn ? [{ name: "Dashboard", href: "/dashboard" }] : []),
+    { name: "Contact Us", href: "/contact-us" },
+    { name: "Blog", href: "/blog" },
+    { name: "Services", href: "/services" },
+    { name: "Order Now", href: "/fytlocalization-service", isAction: true },
   ];
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100 py-3"
-          : "bg-white py-4 border-b border-slate-100"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <div className="relative flex items-center justify-center">
-            <svg
-              width="38"
-              height="38"
-              viewBox="0 0 44 44"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="transform group-hover:scale-105 transition-transform duration-200"
-            >
-              <rect width="44" height="44" rx="10" fill="#0A1838" />
-              <path d="M11 28L19 14H25L17 28H11Z" fill="#00D2B4" />
-              <path d="M21 28L29 14H35L27 28H21Z" fill="#0056F5" />
-              <circle cx="31" cy="30" r="3" fill="#00D2B4" />
-            </svg>
-          </div>
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          <svg width="34" height="34" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="8" fill="#003cd6" />
+            <path d="M11 28L19 14H25L17 28H11Z" fill="#ffffff" />
+            <path d="M21 28L29 14H35L27 28H21Z" fill="#93c5fd" />
+            <circle cx="31" cy="30" r="3" fill="#ffffff" />
+          </svg>
           <div className="flex flex-col">
-            <div className="flex items-center tracking-tight font-extrabold text-xl text-slate-900 whitespace-nowrap">
+            <div className="flex items-center tracking-tight font-extrabold text-lg text-slate-900 leading-none">
               <span>FYT</span>
               <span className="text-blue-600">LOCALIZATION</span>
             </div>
-            <span className="text-[9px] tracking-widest uppercase font-semibold text-slate-500 -mt-1 whitespace-nowrap">
+            <span className="text-[8px] tracking-widest uppercase font-semibold text-slate-500 mt-0.5">
               TRANSLATION COMPANY
             </span>
           </div>
         </Link>
 
-        {/* Exact Desktop Navigation Links from Original Design */}
-        <nav className="hidden md:flex items-center gap-8 lg:gap-10 text-[15px] font-medium text-slate-700">
+        {/* Desktop Links */}
+        <nav className="hidden md:flex items-center gap-7 text-[14px] font-medium text-slate-700">
           {navLinks.map((link) => {
-            const isActive = activeLink === link.name;
-            if (link.isOrderNow) {
+            const isActive = pathname === link.href;
+
+            if (link.isAction) {
               return (
-                <button
+                <Link
                   key={link.name}
-                  onClick={() => {
-                    setActiveLink(link.name);
-                    onOpenOrderModal();
+                  href={link.href}
+                  onClick={(e) => {
+                    if (pathname === "/" && onOpenOrderModal) {
+                      e.preventDefault();
+                      onOpenOrderModal();
+                    }
                   }}
-                  className="relative py-1 text-slate-800 hover:text-blue-600 font-semibold transition-colors whitespace-nowrap group flex flex-col items-center"
+                  className="px-4 py-2 rounded text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                 >
-                  <span>{link.name}</span>
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-blue-600 rounded-full" />
-                  )}
-                </button>
+                  {link.name}
+                </Link>
               );
             }
 
@@ -97,75 +97,85 @@ export default function Navbar({ onOpenOrderModal }: NavbarProps) {
               <Link
                 key={link.name}
                 href={link.href}
-                onClick={() => setActiveLink(link.name)}
-                className={`relative py-1 transition-colors whitespace-nowrap ${
+                className={`relative py-1 transition-colors ${
                   isActive
                     ? "text-blue-600 font-semibold"
-                    : "text-slate-800 hover:text-blue-600"
+                    : "text-slate-700 hover:text-blue-600"
                 }`}
               >
                 <span>{link.name}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-blue-600 rounded-full animate-in fade-in duration-200" />
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-600 rounded-full" />
                 )}
               </Link>
             );
           })}
+
+          {/* Auth status link */}
+          {isLoggedIn ? (
+            <div className="flex items-center pl-2 border-l border-slate-200 text-xs">
+              <button
+                onClick={handleLogout}
+                className="text-slate-500 hover:text-slate-900 font-medium"
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="text-xs font-semibold px-3 py-1.5 rounded border border-slate-300 hover:border-blue-600 hover:text-blue-600 transition-colors text-slate-700"
+            >
+              Login
+            </Link>
+          )}
         </nav>
 
-        {/* Mobile Hamburger Toggle */}
-        <div className="flex md:hidden items-center">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
-        </div>
+        {/* Mobile Toggle */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden p-2 rounded text-slate-700 hover:bg-slate-100"
+          aria-label="Toggle Menu"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-slate-100 px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
-          <div className="flex flex-col gap-3 text-base font-semibold text-slate-800">
-            {navLinks.map((link) => {
-              if (link.isOrderNow) {
-                return (
-                  <button
-                    key={link.name}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setActiveLink(link.name);
-                      onOpenOrderModal();
-                    }}
-                    className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-blue-50 text-blue-600 font-bold"
-                  >
-                    {link.name}
-                  </button>
-                );
-              }
-
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
+        <div className="md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-2 text-sm font-medium">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-slate-800 hover:text-blue-600"
+            >
+              {link.name}
+            </Link>
+          ))}
+          <div className="pt-2 border-t border-slate-100 text-xs">
+            {isLoggedIn ? (
+              <div className="flex items-center justify-end">
+                <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    setActiveLink(link.name);
+                    handleLogout();
                   }}
-                  className={`px-3 py-2.5 rounded-xl hover:bg-blue-50 transition-colors ${
-                    activeLink === link.name ? "text-blue-600 bg-blue-50/60" : ""
-                  }`}
+                  className="text-rose-600 font-medium"
                 >
-                  {link.name}
-                </Link>
-              );
-            })}
+                  Log out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-blue-600 font-semibold"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}

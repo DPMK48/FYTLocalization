@@ -6,11 +6,12 @@ import {
   Mail,
   Phone,
   ArrowUp,
+  ArrowRight,
 } from "lucide-react";
 import { TwitterIcon, LinkedInIcon, FacebookIcon } from "@/components/Icons";
 
 interface FooterProps {
-  onOpenOrderModal: (serviceName?: string) => void;
+  onOpenOrderModal?: (serviceName?: string) => void;
 }
 
 export default function Footer({ onOpenOrderModal }: FooterProps) {
@@ -51,7 +52,7 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
             </Link>
 
             <p className="text-xs sm:text-sm text-blue-100 leading-relaxed max-w-sm">
-              Connecting people, businesses, and cultures across the globe through certified translation, AI localization, real-time interpretation, audio transcription, and synchronized subtitling in 100+ languages.
+              Certified language services bridging communication worldwide with accuracy and cultural precision.
             </p>
 
             <div className="flex items-center gap-3 pt-2">
@@ -94,98 +95,45 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
             </div>
           </div>
 
-          {/* Quick Links Column */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* Navigation Column */}
+          <div className="lg:col-span-3 lg:col-start-6 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
               Navigation
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="#home" className="hover:text-teal-300 transition-colors">
+                <Link href="/" className="hover:text-teal-300 transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="#why-choose" className="hover:text-teal-300 transition-colors">
-                  Why Choose Us
+                <Link href="/services" className="hover:text-teal-300 transition-colors">
+                  Services
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-teal-300 transition-colors">
-                  Our Work & Services
+                <Link href="/blog" className="hover:text-teal-300 transition-colors">
+                  Blog
                 </Link>
               </li>
               <li>
-                <Link href="#how-it-works" className="hover:text-teal-300 transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="#calculator" className="hover:text-teal-300 transition-colors">
-                  Instant Quote
-                </Link>
-              </li>
-              <li>
-                <Link href="#contact" className="hover:text-teal-300 transition-colors">
+                <Link href="/contact-us" className="hover:text-teal-300 transition-colors">
                   Contact Us
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Core Services Column */}
-          <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Core Services
-            </h4>
-            <ul className="space-y-2 text-xs">
               <li>
-                <button
-                  onClick={() => onOpenOrderModal("Document Translation")}
-                  className="hover:text-teal-300 transition-colors text-left"
-                >
-                  Certified Document Translation
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onOpenOrderModal("Conference Interpretation")}
-                  className="hover:text-teal-300 transition-colors text-left"
-                >
-                  Simultaneous Interpretation
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onOpenOrderModal("AI Localization & MTPE")}
-                  className="hover:text-teal-300 transition-colors text-left"
-                >
-                  AI Localization & MTPE
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onOpenOrderModal("Audio Transcription")}
-                  className="hover:text-teal-300 transition-colors text-left"
-                >
-                  Audio & Video Transcription
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onOpenOrderModal("Subtitles & Closed Captions")}
-                  className="hover:text-teal-300 transition-colors text-left"
-                >
-                  Subtitling & Closed Captions
-                </button>
+                <Link href="/fytlocalization-service" className="text-teal-300 font-semibold hover:underline transition-colors flex items-center gap-1">
+                  <span>Book Now</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Direct Support Desk */}
-          <div className="lg:col-span-3 space-y-3">
+          <div className="lg:col-span-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Global Support Desk
+              Support Desk
             </h4>
             <div className="space-y-2.5 text-xs">
               <div className="flex items-center gap-2">
@@ -205,11 +153,8 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  WhatsApp: +234 Support Desk
+                  WhatsApp Support
                 </a>
-              </div>
-              <div className="p-3 bg-blue-900/60 rounded-xl border border-blue-700/60 text-[11px] text-blue-100 leading-relaxed">
-                Operating 24/7 with linguists in West, East, North, and Southern Africa, Europe, and the Americas.
               </div>
             </div>
           </div>
@@ -221,15 +166,18 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
       <div className="border-t border-blue-800 bg-[#001c87] py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <div>
-            © 2025 <strong className="text-white">FYTLOCALIZATION</strong>. All rights reserved.
+            © 2026 <strong className="text-white">FYTLOCALIZATION</strong>. All rights reserved.
           </div>
 
           <div className="flex items-center gap-6 text-blue-200">
-            <Link href="#terms" className="hover:text-white transition-colors">
+            <Link href="/terms" className="hover:text-white transition-colors">
               Terms of Service
             </Link>
-            <Link href="#privacy" className="hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">
               Privacy Policy
+            </Link>
+            <Link href="/login" className="hover:text-white transition-colors">
+              Portal Login
             </Link>
             <button
               onClick={scrollToTop}

@@ -5,11 +5,7 @@ import {
   X,
   CheckCircle2,
   Send,
-  Upload,
   Phone,
-  FileText,
-  Clock,
-  Sparkles,
 } from "lucide-react";
 
 interface OrderModalProps {
@@ -21,11 +17,11 @@ interface OrderModalProps {
 export default function OrderModal({
   isOpen,
   onClose,
-  initialService = "General Translation",
+  initialService = "Translation",
 }: OrderModalProps) {
   const [service, setService] = useState(initialService);
   const [sourceLang, setSourceLang] = useState("English");
-  const [targetLang, setTargetLang] = useState("French");
+  const [targetLang, setTargetLang] = useState("Hausa");
   const [volume, setVolume] = useState("1,500 Words");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -41,18 +37,35 @@ export default function OrderModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setTimeout(() => {
+    try {
+      // Post to API endpoint
+      await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          service,
+          sourceLang,
+          targetLang,
+          volume,
+          fullName,
+          email,
+          notes,
+        }),
+      });
+    } catch {
+      // Graceful fallback
+    } finally {
       setSubmitting(false);
       setSubmitted(true);
-    }, 600);
+    }
   };
 
   const handleWhatsAppDirect = () => {
     const text = encodeURIComponent(
-      `Hello FYTLOCALIZATION! I would like to place an order for:\n\n• Service: ${service}\n• Language Pair: ${sourceLang} to ${targetLang}\n• Scope: ${volume}\n• Name: ${fullName || "Client"}\n• Email: ${email || "N/A"}\n• Notes: ${notes || "None"}`
+      `Hello FYTLOCALIZATION! I would like to book a service:\n\n• Service: ${service}\n• Language Pair: ${sourceLang} to ${targetLang}\n• Scope: ${volume}\n• Name: ${fullName || "Client"}\n• Email: ${email || "N/A"}\n• Notes: ${notes || "None"}`
     );
     window.open(`https://wa.me/message/OIYPQ375X3HKP1?text=${text}`, "_blank");
   };
@@ -82,9 +95,9 @@ export default function OrderModal({
             <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center border-2 border-emerald-300">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900">Order Request Submitted!</h3>
+            <h3 className="text-2xl font-bold text-slate-900">Booking Request Received!</h3>
             <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Your order for <strong>{service}</strong> ({sourceLang} → {targetLang}) has been logged. Our coordinator will email your customized invoice and commence work immediately.
+              Your booking for <strong>{service}</strong> ({sourceLang} → {targetLang}) has been logged. Our project coordinator will email your customized quote and scope summary within minutes.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
               <button
@@ -105,13 +118,9 @@ export default function OrderModal({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[11px] font-bold uppercase tracking-wider mb-2 border border-blue-200">
-                <Sparkles className="w-3 h-3 text-blue-600" />
-                Quick Order & Quote Request
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900">Place Your Order</h3>
+              <h3 className="text-2xl font-bold text-slate-900">Book Your Project</h3>
               <p className="text-xs text-slate-500">
-                Provide your requirements below and our native linguists will handle the rest.
+                Provide your project requirements across any of our 5 language specializations.
               </p>
             </div>
 
@@ -119,24 +128,24 @@ export default function OrderModal({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Service
+                  Service *
                 </label>
                 <select
                   value={service}
                   onChange={(e) => setService(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none"
                 >
-                  <option value="Translation">Translation</option>
-                  <option value="Interpretation">Interpretation</option>
-                  <option value="Localization">AI Localization</option>
-                  <option value="Transcription">Transcription</option>
-                  <option value="Subtitle">Subtitling</option>
+                  <option value="Translation">1. Translation</option>
+                  <option value="Interpretation">2. Interpretation</option>
+                  <option value="Localization/AI Services">3. Localization / AI</option>
+                  <option value="Transcription">4. Transcription</option>
+                  <option value="Subtitle">5. Subtitle & Captions</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Source
+                  Source Language
                 </label>
                 <input
                   type="text"
@@ -149,13 +158,13 @@ export default function OrderModal({
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Target
+                  Target Language
                 </label>
                 <input
                   type="text"
                   value={targetLang}
                   onChange={(e) => setTargetLang(e.target.value)}
-                  placeholder="e.g. Hausa / French"
+                  placeholder="e.g. Hausa / Swahili"
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
                 />
               </div>
@@ -170,7 +179,7 @@ export default function OrderModal({
                 type="text"
                 value={volume}
                 onChange={(e) => setVolume(e.target.value)}
-                placeholder="e.g. 2,500 words or 45 mins audio"
+                placeholder="e.g. 2,500 words, 45 mins audio, or 3 days conference"
                 className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
               />
             </div>
@@ -208,42 +217,32 @@ export default function OrderModal({
             {/* Special Instructions */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Project Notes / Deadline
+                Project Brief / Special Requirements
               </label>
               <textarea
                 rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Include formatting requirements, domain, or turnaround requests..."
+                placeholder="Include formatting requirements, industry domain, deadline, etc."
                 className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none resize-none"
               />
             </div>
 
-            {/* Dual Actions: Direct Submit & WhatsApp Action */}
-            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            {/* Action */}
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/25 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/25 transition-all flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <span className="inline-block animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>Confirm & Submit Order</span>
+                    <span>Confirm & Book Now</span>
                   </>
                 )}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleWhatsAppDirect}
-                className="py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-900 bg-teal-400 hover:bg-teal-300 transition-all flex items-center justify-center gap-1.5"
-                title="Send details directly to WhatsApp"
-              >
-                <Phone className="w-4 h-4 text-slate-900" />
-                <span>WhatsApp Fast Track</span>
               </button>
             </div>
           </form>

@@ -32,12 +32,12 @@ export default function ScientificApproach({ onOpenOrderModal }: ScientificAppro
 
             {/* Sub-heading */}
             <h3 className="text-base sm:text-lg font-semibold text-slate-700 leading-relaxed">
-              Professional Translation, Transcription, Interpretation, and Subtitle Services at Affordable Prices.
+              Precision language services tailored for enterprise and media.
             </h3>
 
             {/* Description */}
             <p className="text-sm sm:text-base text-slate-500 leading-relaxed">
-              Our goal is to help businesses and individuals communicate effectively across linguistic and cultural barriers through native expertise, rigorous QA stages, and timely execution.
+              Native expertise, multi-tier QA, and rapid delivery across 100+ language pairs.
             </p>
 
             {/* WHY US? Button (Solid Royal Blue) */}

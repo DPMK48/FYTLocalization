@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Mail,
-  Phone,
   Send,
   CheckCircle2,
 } from "lucide-react";
@@ -50,53 +48,7 @@ export default function ContactSection() {
               </p>
             </div>
 
-            {/* Direct Cards */}
-            <div className="space-y-4">
-              {/* WhatsApp Live Support */}
-              <a
-                href="https://wa.me/message/OIYPQ375X3HKP1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-start gap-4 p-5 rounded-2xl bg-white border border-blue-100 hover:border-emerald-500 transition-all shadow-md"
-              >
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200 group-hover:scale-105 transition-transform">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-900">WhatsApp Live Desk</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                      Online 24/7
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Instant quotes, project updates, and direct coordinator chat.
-                  </p>
-                  <span className="text-xs font-semibold text-emerald-600 mt-2 block group-hover:underline">
-                    Click to Open WhatsApp Chat →
-                  </span>
-                </div>
-              </a>
 
-              {/* Email Support */}
-              <a
-                href="mailto:support@fytlocalization.com"
-                className="group flex items-start gap-4 p-5 rounded-2xl bg-white border border-blue-100 hover:border-blue-500 transition-all shadow-md"
-              >
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200 group-hover:scale-105 transition-transform">
-                  <Mail className="w-6 h-6" />
-                </div>
-                <div>
-                  <span className="text-sm font-bold text-slate-900">Official Email Support</span>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Send RFP documents, NDA agreements, and batch translation files.
-                  </p>
-                  <span className="text-xs font-semibold text-blue-700 mt-2 block group-hover:underline">
-                    support@fytlocalization.com
-                  </span>
-                </div>
-              </a>
-            </div>
 
             {/* Social channels */}
             <div className="pt-2">

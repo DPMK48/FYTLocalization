@@ -329,7 +329,7 @@ export default function QuoteCalculator({ onOpenOrderModal }: QuoteCalculatorPro
                   onClick={handleApplyQuote}
                   className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-950 bg-teal-400 hover:bg-teal-300 shadow-lg transition-all flex items-center justify-center gap-2"
                 >
-                  <span>Submit & Place Order</span>
+                  <span>Book Now with this Estimate</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 

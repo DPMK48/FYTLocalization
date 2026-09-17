@@ -18,26 +18,22 @@ export default function HowItWorks({ onOpenOrderModal }: HowItWorksProps) {
     {
       icon: Lightbulb,
       title: "Order Our Service",
-      description:
-        "Browse through our range of services including translation, transcription, interpretation, and subtitles. Select the one that fits your project needs.",
+      description: "Select your desired service from our solutions.",
     },
     {
       icon: LineChart,
       title: "Tell us more",
-      description:
-        "Provide us with the details of your project. Specify the language pair, project type, and any special requirements you may have.",
+      description: "Specify language pairs, timelines, and details.",
     },
     {
       icon: UserCheck,
       title: "Get Started",
-      description:
-        "Submit your project details and receive a personalized quote. Once you approve, our team of professionals will begin working on your project.",
+      description: "Approve your custom quote to begin work.",
     },
     {
       icon: CheckCircle2,
       title: "Receive your Order",
-      description:
-        "Sit back and relax while we handle the rest. You’ll receive your completed order promptly, with the quality and accuracy you expect from FYTLOCALIZATION.",
+      description: "Receive your verified output promptly.",
     },
   ];
 
@@ -91,7 +87,7 @@ export default function HowItWorks({ onOpenOrderModal }: HowItWorksProps) {
 
             {/* Description */}
             <p className="text-sm sm:text-base text-blue-100 leading-relaxed">
-              This step-by-step process ensures a smooth and efficient experience, making it easy for you to get the language support you need.
+              Streamlined process delivering reliable language support on schedule.
             </p>
 
             {/* White SERVICES Button */}

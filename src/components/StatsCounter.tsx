@@ -27,7 +27,7 @@ export default function StatsCounter({ onOpenOrderModal }: StatsCounterProps) {
             </h2>
 
             <p className="text-sm sm:text-base text-blue-100 leading-relaxed max-w-xl">
-              Whether you need translation, transcription, interpretation, or subtitle services, FYTLOCALIZATION is here to help. Contact us today to discuss your project and receive a customized quote.
+              Certified specialists delivering high-accuracy translation, interpretation, and transcription worldwide.
             </p>
 
             <div className="pt-2">
@@ -41,7 +41,7 @@ export default function StatsCounter({ onOpenOrderModal }: StatsCounterProps) {
             </div>
           </div>
 
-          {/* Right Column: White Metric Stat Cards (Matching screenshot) */}
+          {/* Right Column: White Metric Stat Cards (Projects and Freelancers) */}
           <div className="lg:col-span-6 grid grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 sm:p-8 text-center text-slate-800 shadow-2xl border border-blue-100 flex flex-col items-center justify-center">
               <span className="text-4xl sm:text-5xl font-extrabold text-blue-700 font-mono mb-2">
@@ -58,24 +58,6 @@ export default function StatsCounter({ onOpenOrderModal }: StatsCounterProps) {
               </span>
               <span className="text-sm sm:text-base font-bold text-slate-700">
                 Freelancers
-              </span>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 sm:p-8 text-center text-slate-800 shadow-2xl border border-blue-100 flex flex-col items-center justify-center">
-              <span className="text-4xl sm:text-5xl font-extrabold text-blue-700 font-mono mb-2">
-                +100
-              </span>
-              <span className="text-sm sm:text-base font-bold text-slate-700">
-                Languages
-              </span>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 sm:p-8 text-center text-slate-800 shadow-2xl border border-blue-100 flex flex-col items-center justify-center">
-              <span className="text-4xl sm:text-5xl font-extrabold text-blue-700 font-mono mb-2">
-                100%
-              </span>
-              <span className="text-sm sm:text-base font-bold text-slate-700">
-                Satisfaction
               </span>
             </div>
           </div>
