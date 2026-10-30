@@ -31,7 +31,7 @@ export const INITIAL_MEMBERS: Member[] = [
     joinedDate: "Aug 2026",
     lastActive: "Active now",
     isOnline: true,
-    location: "Abuja, Nigeria",
+    location: "Bauchi State, Nigeria",
     nativeLanguage: "Hausa & English",
     languagePairs: ["Hausa ↔ English", "Arabic → Hausa", "French → English"],
     skills: ["Translation", "AI Localization", "Transcription", "Interpretation"],

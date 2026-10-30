@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProfileHeader from "@/components/ProfileHeader";
 import { useUserProfile } from "@/data/userProfileStore";
-import { CheckCircle2, MessageCircle } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function ProfileEditPage() {
   const { profile, updateProfile } = useUserProfile();
@@ -102,18 +102,6 @@ export default function ProfileEditPage() {
       </main>
 
       <Footer />
-
-      {/* Floating Chat Button */}
-      <a
-        href="https://wa.me/message/OIYPQ375X3HKP1"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-lg transition-colors"
-        aria-label="Chat support"
-        title="Live Support"
-      >
-        <MessageCircle className="w-6 h-6 fill-white stroke-none" />
-      </a>
     </div>
   );
 }

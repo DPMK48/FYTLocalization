@@ -42,17 +42,13 @@ export default function CareersPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar />
 
-      <header className="bg-[#003cd6] text-white py-14 lg:py-20 relative overflow-hidden">
+      <header className="bg-[#0000FF] text-white py-14 lg:py-20 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-teal-300 text-xs font-semibold uppercase tracking-wider mb-3">
-            <Users className="w-3.5 h-3.5" />
-            Join Our Freelancer & Linguist Network
-          </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.15] max-w-2xl">
-            Linguist Opportunities at FYTLOCALIZATION
+            Linguist & AI Opportunities at FYT Localization
           </h1>
           <p className="mt-3 text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed">
-            We are always onboarding talented native translators, conference interpreters, audio transcribers, and AI localization specialists.
+            We are always onboarding talented native translators, interpreters, audio transcribers, and AI data specialists across Africa.
           </p>
         </div>
       </header>

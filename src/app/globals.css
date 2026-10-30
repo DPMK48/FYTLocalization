@@ -1,19 +1,28 @@
 @import "tailwindcss";
 
+@theme {
+  --color-blue-600: #0000FF;
+  --color-blue-700: #0000dd;
+  --color-blue-800: #0000b8;
+  --color-blue-900: #2b2c2e;
+  --color-teal-300: #04ddb2;
+  --color-teal-400: #04ddb2;
+  --color-brand-blue: #0000FF;
+  --color-brand-teal: #04ddb2;
+  --color-brand-dark: #2b2c2e;
+}
+
 @layer base {
   :root {
-    --primary: #0044ee;
-    --primary-dark: #002db3;
-    --primary-light: #3874ff;
-    --accent-teal: #00d2b4;
-    --accent-cyan: #06b6d4;
-    --navy-900: #070d1e;
-    --navy-800: #0c1836;
-    --navy-700: #13244e;
-    --navy-600: #1e356e;
+    --primary: #0000FF;
+    --primary-dark: #0000dd;
+    --primary-light: #3333ff;
+    --accent-teal: #04ddb2;
+    --navy-900: #2b2c2e;
+    --navy-800: #35373a;
     --surface-light: #f8fafc;
     --surface-card: #ffffff;
-    --text-main: #0f172a;
+    --text-main: #2b2c2e;
     --text-muted: #64748b;
   }
 }
@@ -81,4 +90,20 @@ body {
 
 .animate-float-delayed {
   animation: gentle-float 4.5s infinite ease-in-out 1.5s;
+}
+
+/* Horizontal scrolling marquee for partner strip */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
 }

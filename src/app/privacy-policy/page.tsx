@@ -10,16 +10,12 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar />
 
-      <header className="bg-[#003cd6] text-white py-14 lg:py-20 relative overflow-hidden">
+      <header className="bg-[#0000FF] text-white py-14 lg:py-20 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-teal-300 text-xs font-semibold uppercase tracking-wider mb-3">
-            <Lock className="w-3.5 h-3.5" />
-            Security & Data Protection
-          </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
             Privacy Policy
           </h1>
-          <p className="mt-2 text-sm text-blue-100">
+          <p className="mt-2 text-sm text-white/90">
             Last updated: September 2026 • FYTLOCALIZATION Global Privacy Standard
           </p>
         </div>
@@ -58,11 +54,26 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-bold text-slate-900">5. Contact Data Protection Officer</h2>
+            <h2 className="text-lg font-bold text-slate-900">5. Regulatory Compliance & Data Protection Governance</h2>
+            <div className="space-y-2 text-xs sm:text-sm">
+              <p>
+                <strong>Corporate Affairs Commission (CAC):</strong> FYTLOCALIZATION operates as a fully registered, verified corporate entity in the Federal Republic of Nigeria, compliant with all corporate and statutory regulations.
+              </p>
+              <p>
+                <strong>Nigeria Data Protection Commission (NDPC):</strong> We are officially licensed and compliant with the data processing directives mandated by the NDPC.
+              </p>
+              <p>
+                <strong>NDPA & GDPR Alignment:</strong> All speech corpora, multimedia datasets, linguistic assets, and participant information collected by FYTLOCALIZATION strictly adhere to the Nigeria Data Protection Act (NDPA 2023) and European Union General Data Protection Regulation (GDPR) guidelines on informed consent, anonymization, and subject rights.
+              </p>
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-lg font-bold text-slate-900">6. Contact Data Protection Officer</h2>
             <p>
               For inquiries regarding data privacy or NDAs, reach out directly to our privacy officer at{" "}
-              <a href="mailto:support@fytlocalization.com" className="text-blue-600 font-semibold underline">
-                support@fytlocalization.com
+              <a href="mailto:admin@fytlocalization.com" className="text-blue-600 font-semibold underline">
+                admin@fytlocalization.com
               </a>.
             </p>
           </section>

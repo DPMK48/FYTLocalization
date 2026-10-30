@@ -13,7 +13,6 @@ import {
   Clock,
   User,
   Share2,
-  Sparkles,
   ArrowRight,
   BookOpen,
 } from "lucide-react";
@@ -26,12 +25,24 @@ export default function BlogPostReaderPage() {
   const post = posts.find((p) => p.slug === slug) || publishedPosts[0];
   const otherPosts = publishedPosts.filter((p) => p.slug !== post?.slug).slice(0, 3);
 
+  // Validate image URL safely to prevent Next.js Image crash on invalid input (e.g. malformed strings)
+  const isLocalImage = typeof post?.image === "string" && post.image.trim().startsWith("/");
+  let isValidExternalImage = false;
+  if (typeof post?.image === "string" && !isLocalImage) {
+    try {
+      const url = new URL(post.image.trim());
+      isValidExternalImage = url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      isValidExternalImage = false;
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar />
 
       {/* Article Header */}
-      <header className="bg-[#003cd6] text-white py-14 lg:py-20 relative overflow-hidden">
+      <header className="bg-[#0000FF] text-white py-14 lg:py-20 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
           <Link
             href="/blog"
@@ -45,7 +56,7 @@ export default function BlogPostReaderPage() {
             <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-400 text-slate-950">
               {post.category}
             </span>
-            <span className="text-xs text-blue-200 flex items-center gap-1">
+            <span className="text-xs text-white/80 flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               {post.readTime}
             </span>
@@ -70,14 +81,23 @@ export default function BlogPostReaderPage() {
       {/* Article Body */}
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-10">
         {/* Optional Featured Image */}
-        {post.image ? (
+        {isLocalImage ? (
           <div className="relative h-72 sm:h-96 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-slate-900">
             <Image
-              src={post.image}
+              src={post.image!}
               alt={post.title}
               fill
+              sizes="(max-width: 896px) 100vw, 896px"
               className="object-cover"
               priority
+            />
+          </div>
+        ) : isValidExternalImage ? (
+          <div className="relative h-72 sm:h-96 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-slate-900">
+            <img
+              src={post.image!}
+              alt={post.title}
+              className="w-full h-full object-cover"
             />
           </div>
         ) : null}
@@ -89,29 +109,6 @@ export default function BlogPostReaderPage() {
               {paragraph}
             </p>
           ))}
-
-          {/* Call to action inside blog */}
-          <div className="my-8 p-6 sm:p-8 rounded-2xl bg-blue-50 border border-blue-200 space-y-3">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-700">
-              <Sparkles className="w-3.5 h-3.5" />
-              Language Infrastructure for Africa
-            </div>
-            <h3 className="text-lg font-bold text-slate-900">
-              Need linguistic accuracy and scale for your next AI or translation initiative?
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600">
-              FYTLOCALIZATION supports global platforms and regional teams across 100+ African and global languages.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/fytlocalization-service"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md"
-              >
-                <span>Book a Consultation or Quote</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
         </article>
 
         {/* Related Articles */}

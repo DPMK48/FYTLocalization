@@ -93,7 +93,23 @@ export default function ProfileBlogCMSPage() {
     }
 
     const authorFullName = `${profile.firstName} ${profile.lastName}`.trim();
-    const finalImage = formImageUrl.trim() ? formImageUrl.trim() : "";
+    let finalImage = formImageUrl.trim();
+    if (finalImage) {
+      const isLocal = finalImage.startsWith("/");
+      let isValidUrl = false;
+      if (!isLocal) {
+        try {
+          const parsed = new URL(finalImage);
+          isValidUrl = parsed.protocol === "http:" || parsed.protocol === "https:";
+        } catch {
+          isValidUrl = false;
+        }
+      }
+      if (!isLocal && !isValidUrl) {
+        showToast("Invalid image URL. Must start with '/' or be a valid http(s) URL.");
+        return;
+      }
+    }
 
     if (editingPost) {
       updatePost(editingPost.slug, {

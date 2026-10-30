@@ -175,8 +175,18 @@ export function getStoredProfile(): UserProfile {
   if (typeof window === "undefined") return FATIMA_PROFILE;
   try {
     const raw = localStorage.getItem("fyt_user_profile");
-    if (!raw) return FATIMA_PROFILE;
-    return { ...FATIMA_PROFILE, ...JSON.parse(raw) };
+    if (raw) {
+      return JSON.parse(raw);
+    }
+    const loggedUsername = localStorage.getItem("fyt_logged_in_username");
+    if (loggedUsername) {
+      return getProfileForMember(loggedUsername);
+    }
+    const role = localStorage.getItem("fyt_user_role");
+    if (role === "member") {
+      return getProfileForMember("hamdan");
+    }
+    return FATIMA_PROFILE;
   } catch {
     return FATIMA_PROFILE;
   }
@@ -350,6 +360,26 @@ export function useUserProfile() {
     }, 1200);
   };
 
+  const sendMassMessage = (text: string, recipients: string[]) => {
+    if (!profile.isAdmin) {
+      console.warn("Unauthorized: only users with admin role have access to mass messaging.");
+      return 0;
+    }
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const newMessages: DirectMessage[] = recipients.map((recipient, i) => ({
+      id: `msg-${Date.now()}-${i}`,
+      sender: "You",
+      recipient,
+      text,
+      time: timestamp,
+      isSelf: true,
+    }));
+    const updated = [...getStoredMessages(), ...newMessages];
+    saveStoredMessages(updated);
+    setMessages(updated);
+    return newMessages.length;
+  };
+
   const selectMember = (username: string) => {
     const updated = switchActiveMember(username);
     setProfile(updated);
@@ -365,6 +395,7 @@ export function useUserProfile() {
     addNotification,
     messages,
     sendMessage,
+    sendMassMessage,
     selectMember,
     activeNowString,
   };

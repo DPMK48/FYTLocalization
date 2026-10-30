@@ -12,16 +12,26 @@ import {
   FileText,
   Clock,
   ShieldCheck,
-  Upload,
   Globe2,
+  Cpu,
 } from "lucide-react";
+import {
+  SERVICE_CATEGORIES,
+  ServiceCategoryType,
+} from "@/data/servicesData";
+import { saveSubmission } from "@/data/submissionsStore";
+import { SITE_CONFIG } from "@/data/siteConfig";
 
 export default function BookNowServicePage() {
+  const [selectedCategory, setSelectedCategory] = useState<ServiceCategoryType>("localization");
   const [formData, setFormData] = useState({
     service: "Translation",
     sourceLanguage: "English",
     targetLanguage: "Hausa",
-    budgetModel: "Per Word",
+    dataType: "Facial / Selfie images",
+    targetRegion: "Northern Nigeria & Sahel region",
+    collectionTool: "Mobile recording app",
+    budgetModel: "Per Word / Deliverable",
     volume: "2,500 words",
     deadline: "Within 48 hours",
     fullName: "",
@@ -33,28 +43,46 @@ export default function BookNowServicePage() {
 
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+
+  const currentCatObj =
+    SERVICE_CATEGORIES.find((c) => c.id === selectedCategory) || SERVICE_CATEGORIES[0];
+
+  const handleCategoryChange = (cat: ServiceCategoryType) => {
+    setSelectedCategory(cat);
+    const firstService =
+      SERVICE_CATEGORIES.find((c) => c.id === cat)?.services[0]?.title || "Translation";
+    setFormData((prev) => ({
+      ...prev,
+      service: firstService,
+      volume: cat === "localization" ? "2,500 words" : "500 images / 50 hours",
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
+    const payload = {
+      category: selectedCategory,
+      service: formData.service,
+      fullName: formData.fullName,
+      email: formData.email,
+      volume: formData.volume,
+      notes: `[Org: ${formData.organization || "N/A"}] [Phone: ${formData.phone || "N/A"}] [Deadline: ${formData.deadline}] - ${formData.projectBrief}`,
+      ...(selectedCategory === "localization"
+        ? { sourceLang: formData.sourceLanguage, targetLang: formData.targetLanguage }
+        : { dataType: formData.dataType, targetRegion: formData.targetRegion, collectionTool: formData.collectionTool }),
+    };
+
     try {
       await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          service: formData.service,
-          sourceLang: formData.sourceLanguage,
-          targetLang: formData.targetLanguage,
-          volume: formData.volume,
-          fullName: formData.fullName,
-          email: formData.email,
-          notes: `[Budget Model: ${formData.budgetModel}] [Deadline: ${formData.deadline}] [Org: ${formData.organization}] [Phone: ${formData.phone}] - ${formData.projectBrief}`,
-        }),
+        body: JSON.stringify(payload),
       });
+      saveSubmission(payload);
     } catch {
-      // Fallback
+      saveSubmission(payload);
     } finally {
       setSubmitting(false);
       setSubmitted(true);
@@ -63,9 +91,9 @@ export default function BookNowServicePage() {
 
   const handleWhatsAppQuickTrack = () => {
     const text = encodeURIComponent(
-      `Hello FYTLOCALIZATION! I submitted a booking request for:\n• Service: ${formData.service}\n• Pair: ${formData.sourceLanguage} to ${formData.targetLanguage}\n• Scope: ${formData.volume}\n• Client: ${formData.fullName || "Client"}\n• Email: ${formData.email || "N/A"}`
+      `Hello ${SITE_CONFIG.name}! I requested a quote for:\n• Service: ${formData.service}\n• Scope: ${formData.volume}\n• Client: ${formData.fullName || "Client"}\n• Email: ${formData.email || "N/A"}`
     );
-    window.open(`https://wa.me/message/OIYPQ375X3HKP1?text=${text}`, "_blank");
+    window.open(`${SITE_CONFIG.contact.whatsappUrl}?text=${text}`, "_blank");
   };
 
   return (
@@ -73,17 +101,13 @@ export default function BookNowServicePage() {
       <Navbar />
 
       {/* Header Banner */}
-      <section className="bg-[#003cd6] text-white py-14 lg:py-20 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-teal-300 text-xs font-semibold uppercase tracking-wider mb-3 border border-white/20">
-            <Sparkles className="w-3.5 h-3.5" />
-            Official Project Intake Desk
-          </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.15] max-w-2xl">
-            Book Now & Request a Formal Project Quote
+      <section className="bg-[#0000FF] text-white py-14 lg:py-20 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.15] max-w-2xl mx-auto">
+            Request a Project Quote
           </h1>
-          <p className="mt-3 text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed">
-            Specify your language pair, scope, and service requirements below. Our dedicated project coordinator will evaluate your brief and email a competitive quote within minutes.
+          <p className="mt-3 text-sm sm:text-base text-blue-100 max-w-xl mx-auto leading-relaxed">
+            Specify your requirements below. Our dedicated project coordinator will evaluate your brief and email a competitive quote within minutes.
           </p>
         </div>
       </section>
@@ -95,25 +119,35 @@ export default function BookNowServicePage() {
             <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center border-2 border-emerald-300">
               <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h2 className="text-3xl font-extrabold text-slate-900">Booking Request Received!</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Quote Request Received!</h2>
             <p className="text-slate-600 text-sm leading-relaxed max-w-md mx-auto">
-              Thank you, <strong>{formData.fullName || "valued client"}</strong>. Your project brief for <strong>{formData.service}</strong> ({formData.sourceLanguage} → {formData.targetLanguage}) has been assigned to a language manager.
+              Thank you, <strong>{formData.fullName || "valued client"}</strong>. Your project brief for <strong>{formData.service}</strong> has been assigned to a language & AI coordinator.
             </p>
 
-            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 text-xs text-blue-900 text-left space-y-1">
-              <div><strong>Reference ID:</strong> FYT-{Date.now().toString().slice(-6)}</div>
-              <div><strong>Service:</strong> {formData.service}</div>
-              <div><strong>Scope:</strong> {formData.volume} ({formData.budgetModel})</div>
-              <div><strong>Confirmation sent to:</strong> {formData.email}</div>
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl max-w-md mx-auto text-left text-xs space-y-2">
+              <div className="flex justify-between text-slate-500">
+                <span>Category:</span>
+                <strong className="text-slate-800">
+                  {selectedCategory === "localization" ? "Localization Services" : "AI Data Services"}
+                </strong>
+              </div>
+              <div className="flex justify-between text-slate-500">
+                <span>Service:</span>
+                <strong className="text-slate-800">{formData.service}</strong>
+              </div>
+              <div className="flex justify-between text-slate-500">
+                <span>Volume / Scope:</span>
+                <strong className="text-slate-800">{formData.volume}</strong>
+              </div>
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
               <button
                 onClick={handleWhatsAppQuickTrack}
-                className="px-6 py-3 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+                className="px-6 py-3 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-sm"
               >
                 <Phone className="w-4 h-4" />
-                <span>Track Instantly on WhatsApp</span>
+                <span>Track on WhatsApp</span>
               </button>
               <Link
                 href="/"
@@ -128,136 +162,202 @@ export default function BookNowServicePage() {
             onSubmit={handleSubmit}
             className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl space-y-8"
           >
-            {/* Step 1: Service & Language Pair */}
+            {/* Category Selector */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Select Service Category
+              </label>
+              <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-100 rounded-2xl">
+                <button
+                  type="button"
+                  onClick={() => handleCategoryChange("localization")}
+                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2 ${
+                    selectedCategory === "localization"
+                      ? "bg-white text-blue-700 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <Globe2 className="w-4 h-4 text-blue-600" />
+                  <span>Localization Services</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryChange("ai-data")}
+                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2 ${
+                    selectedCategory === "ai-data"
+                      ? "bg-white text-blue-700 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <Cpu className="w-4 h-4 text-blue-600" />
+                  <span>AI Data Services</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Step 1: Service Specific Inputs */}
             <div>
               <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
                 <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">
                   1
                 </span>
                 <h3 className="text-base font-bold text-slate-900">
-                  Service Selection & Language Pair
+                  {selectedCategory === "localization"
+                    ? "Service Selection & Language Pairs"
+                    : "AI Dataset Specification & Target Region"}
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Service Line *
-                  </label>
-                  <select
-                    value={formData.service}
-                    onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 font-semibold focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  >
-                    <option value="Translation">1. Translation (Document & Legal)</option>
-                    <option value="Interpretation">2. Interpretation (Conferences & RSI)</option>
-                    <option value="Localization/AI Services">3. Localization / AI Data Annotation</option>
-                    <option value="Transcription">4. Transcription (Audio & Video)</option>
-                    <option value="Subtitle">5. Subtitling & Closed Captions</option>
-                  </select>
-                </div>
+              {selectedCategory === "localization" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Service *
+                    </label>
+                    <select
+                      value={formData.service}
+                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 font-semibold focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    >
+                      {currentCatObj.services.map((s) => (
+                        <option key={s.id} value={s.title}>
+                          {s.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Source Language *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.sourceLanguage}
-                    onChange={(e) => setFormData({ ...formData, sourceLanguage: e.target.value })}
-                    placeholder="e.g. English, French, Arabic"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Source Language *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.sourceLanguage}
+                      onChange={(e) => setFormData({ ...formData, sourceLanguage: e.target.value })}
+                      placeholder="e.g. English, French, Arabic"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Target Language(s) *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.targetLanguage}
-                    onChange={(e) => setFormData({ ...formData, targetLanguage: e.target.value })}
-                    placeholder="e.g. Hausa, Yoruba, Swahili"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  />
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Target Language(s) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.targetLanguage}
+                      onChange={(e) => setFormData({ ...formData, targetLanguage: e.target.value })}
+                      placeholder="e.g. Hausa, Yoruba, Swahili"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      AI Data Service *
+                    </label>
+                    <select
+                      value={formData.service}
+                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 font-semibold focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    >
+                      {currentCatObj.services.map((s) => (
+                        <option key={s.id} value={s.title}>
+                          {s.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Data / Multimedia Type *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.dataType}
+                      onChange={(e) => setFormData({ ...formData, dataType: e.target.value })}
+                      placeholder="e.g. Selfie images, video, speech audio"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Target Region (Free-Text) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.targetRegion}
+                      onChange={(e) => setFormData({ ...formData, targetRegion: e.target.value })}
+                      placeholder="e.g. West Africa, Nairobi urban, etc."
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Step 2: Scope & Budget Model */}
+            {/* Step 2: Scope & Volume */}
             <div>
               <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
                 <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">
                   2
                 </span>
                 <h3 className="text-base font-bold text-slate-900">
-                  Project Scope, Budget Model & Urgency
+                  Project Scope & Estimated Volume or Duration
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Budget Model *
-                  </label>
-                  <select
-                    value={formData.budgetModel}
-                    onChange={(e) => setFormData({ ...formData, budgetModel: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  >
-                    <option value="Per Word">Per Word (Recommended for Translation)</option>
-                    <option value="Per Hour">Per Hour (Recommended for Interpretation)</option>
-                    <option value="Per Minute">Per Minute (Transcription & Subtitles)</option>
-                    <option value="Per Milestone">Per Milestone / Project Sprint</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Volume / Estimated Duration
+                    Estimated volume or duration *
                   </label>
                   <input
                     type="text"
+                    required
                     value={formData.volume}
                     onChange={(e) => setFormData({ ...formData, volume: e.target.value })}
-                    placeholder="e.g. 5,000 words or 90 mins audio"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    placeholder="e.g. 5,000 words, 100 audio hours, 2 weeks"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none font-medium"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Turnaround Timeline
+                    Target Completion Deadline
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={formData.deadline}
                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  >
-                    <option value="Rush (12–24h)">Rush Priority (12–24 Hours)</option>
-                    <option value="Standard (24–48h)">Standard (24–48 Hours)</option>
-                    <option value="Flexible (3–5 days)">Flexible (3–5 Days)</option>
-                    <option value="Scheduled Future Event">Scheduled Future Event / Conference</option>
-                  </select>
+                    placeholder="e.g. Within 48 hours, Next Friday, etc."
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Step 3: Client Details */}
+            {/* Step 3: Contact & Notes */}
             <div>
               <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
                 <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">
                   3
                 </span>
                 <h3 className="text-base font-bold text-slate-900">
-                  Contact Information
+                  Organization & Contact Details
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                     Full Name *
@@ -267,131 +367,68 @@ export default function BookNowServicePage() {
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="e.g. Dr. Alex Vance"
+                    placeholder="Amina Bello"
                     className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Official Email Address *
+                    Email Address *
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="alex@organization.org"
+                    placeholder="amina@organization.org"
                     className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    WhatsApp or Phone Number
+                    Phone / WhatsApp (Optional)
                   </label>
                   <input
-                    type="tel"
+                    type="text"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+234..."
                     className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
                   />
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Company / Organization
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.organization}
-                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                    placeholder="e.g. NGO, Fintech, Media House"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Project Brief / Special Requirements
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.projectBrief}
+                  onChange={(e) => setFormData({ ...formData, projectBrief: e.target.value })}
+                  placeholder="Detail any technical requirements, tone guidelines, dialect specificities, or compliance standards..."
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none resize-none"
+                />
               </div>
             </div>
 
-            {/* Step 4: Brief & Optional File Upload */}
-            <div>
-              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
-                <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">
-                  4
-                </span>
-                <h3 className="text-base font-bold text-slate-900">
-                  Project Brief & File Upload
-                </h3>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Project Brief & Instructions
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={formData.projectBrief}
-                    onChange={(e) => setFormData({ ...formData, projectBrief: e.target.value })}
-                    placeholder="Describe your project, context, target audience, specific dialect requirements, or formatting needs..."
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  />
-                </div>
-
-                {/* Upload Zone */}
-                <div className="p-6 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50/50 hover:bg-slate-50 text-center transition-colors">
-                  <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-slate-700">
-                    Upload sample document, audio clip, or RFP specification
-                  </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Supports .docx, .pdf, .mp3, .srt, .xlsx up to 50MB (protected under strict NDA)
-                  </p>
-                  <input
-                    type="file"
-                    id="file-upload"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        setSelectedFile(e.target.files[0].name);
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor="file-upload"
-                    className="inline-block mt-3 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer shadow-sm"
-                  >
-                    {selectedFile ? `Selected: ${selectedFile}` : "Select File"}
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Submission Actions */}
-            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+            {/* Submit Action */}
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 py-4 px-6 rounded-xl text-sm font-extrabold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-600/25 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 px-6 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-all flex items-center justify-center gap-2"
               >
                 {submitting ? (
-                  <span className="inline-block animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                  <span className="inline-block animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
                 ) : (
                   <>
+                    <span>Send Quote</span>
                     <Send className="w-4 h-4" />
-                    <span>Submit Booking & Request Formal Quote</span>
                   </>
                 )}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleWhatsAppQuickTrack}
-                className="py-4 px-6 rounded-xl text-sm font-bold text-slate-900 bg-teal-400 hover:bg-teal-300 shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-              >
-                <Phone className="w-4 h-4" />
-                <span>Chat via WhatsApp</span>
               </button>
             </div>
           </form>

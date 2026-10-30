@@ -6,7 +6,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useMembersStore, Member } from "@/data/membersData";
-import { useUserProfile, switchActiveMember } from "@/data/userProfileStore";
+import { useUserProfile } from "@/data/userProfileStore";
 import {
   User,
   MoreHorizontal,
@@ -207,13 +207,20 @@ export default function MembersDirectoryPage() {
 
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Link
-                              href="/profile"
-                              onClick={() => switchActiveMember(member.username)}
-                              className="text-sm font-bold text-blue-600 hover:underline"
-                            >
-                              {member.name}
-                            </Link>
+                            {isSelf ? (
+                              <Link
+                                href="/profile"
+                                className="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1.5"
+                                title="Your Profile"
+                              >
+                                <span>{member.name}</span>
+                                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">You</span>
+                              </Link>
+                            ) : (
+                              <span className="text-sm font-bold text-slate-900">
+                                {member.name}
+                              </span>
+                            )}
 
                             {member.isAdmin && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
@@ -283,28 +290,25 @@ export default function MembersDirectoryPage() {
                             )}
 
                             <div className="py-1">
-                              {!isSelf && (
+                              {!isSelf ? (
                                 <Link
                                   href={`/profile/messages?to=${member.username}`}
                                   className="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
                                   onClick={() => setOpenMenuId(null)}
                                 >
-                                  <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
+                                  <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
                                   <span>Send Direct Message</span>
                                 </Link>
+                              ) : (
+                                <Link
+                                  href="/profile"
+                                  className="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
+                                  onClick={() => setOpenMenuId(null)}
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                                  <span>My Profile</span>
+                                </Link>
                               )}
-
-                              <Link
-                                href="/profile"
-                                className="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
-                                onClick={() => {
-                                  switchActiveMember(member.username);
-                                  setOpenMenuId(null);
-                                }}
-                              >
-                                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                                <span>View Profile</span>
-                              </Link>
                             </div>
                           </div>
                         )}

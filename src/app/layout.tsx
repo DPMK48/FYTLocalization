@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
+import ChatbotWidget from "@/components/ChatbotWidget";
+import { SITE_CONFIG } from "@/data/siteConfig";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -17,43 +19,43 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#003cd6",
+  themeColor: "#0000FF",
   width: "device-width",
   initialScale: 1,
 };
 
 export const metadata: Metadata = {
-  title: "FYTLOCALIZATION | Professional Translation, AI Localization & Interpretation",
+  title: "FYT Localization | Bridging Africa Through Language and Technology",
   description:
-    "Connecting the world through language. Accurate translations, AI localization, real-time interpretation, precision transcription, and subtitle services in 100+ African and global languages.",
+    "Professional translation, interpretation, audio transcription, subtitling, and AI data services in 100+ African and global languages.",
   keywords: [
-    "FYTLOCALIZATION",
+    "FYT Localization",
     "Translation Company",
     "African Languages Translation",
-    "AI Localization",
+    "AI Data Services",
     "Interpretation Services",
     "Audio Transcription",
     "Subtitling Services",
+    "LLM Fine-tuning",
+    "Speech Data Collection",
     "Hausa Translation",
     "Yoruba Translation",
     "Swahili Translation",
-    "Arabic Translation",
-    "French Translation",
   ],
-  authors: [{ name: "FYTLOCALIZATION Team" }],
+  authors: [{ name: "FYT Localization Team" }],
   openGraph: {
-    title: "FYTLOCALIZATION | Connecting The World Through Language",
+    title: "FYT Localization | Bridging Africa Through Language and Technology",
     description:
-      "Enterprise-grade translation, AI localization, audio transcription, and interpretation across 100+ global languages.",
+      "Enterprise-grade translation, interpretation, subtitling, and AI data services across 100+ global languages.",
     url: "https://fytlocalization.com",
-    siteName: "FYTLOCALIZATION",
+    siteName: "FYT Localization",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FYTLOCALIZATION | Connecting The World Through Language",
-    description: "Accurate translation and AI localization services for African and global languages.",
+    title: "FYT Localization | Bridging Africa Through Language and Technology",
+    description: "Accurate translation and AI data services for African and global languages.",
   },
 };
 
@@ -67,8 +69,9 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakarta.variable} ${inter.variable} scroll-smooth`}
     >
-      <body className="font-sans antialiased bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
+      <body className="font-sans antialiased bg-white text-slate-900 selection:bg-blue-600 selection:text-white relative">
         {children}
+        <ChatbotWidget />
       </body>
     </html>
   );

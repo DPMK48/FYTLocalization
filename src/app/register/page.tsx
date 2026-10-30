@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
+
+import { switchActiveMember } from "@/data/userProfileStore";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [role, setRole] = useState<"member" | "admin">("member");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,7 +25,10 @@ export default function RegisterPage() {
 
     if (typeof window !== "undefined") {
       localStorage.setItem("fyt_logged_in", "true");
-      localStorage.setItem("fyt_user_role", role);
+      localStorage.setItem("fyt_user_role", "member");
+      const newMemberUsername =
+        formData.email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "member";
+      switchActiveMember(newMemberUsername);
     }
 
     setTimeout(() => {
@@ -36,17 +41,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       {/* Top Header */}
       <div className="py-4 px-6 sm:px-10 bg-white border-b border-slate-200 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <svg width="32" height="32" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="8" fill="#003cd6" />
-            <path d="M11 28L19 14H25L17 28H11Z" fill="#ffffff" />
-            <path d="M21 28L29 14H35L27 28H21Z" fill="#93c5fd" />
-            <circle cx="31" cy="30" r="3" fill="#ffffff" />
-          </svg>
-          <span className="font-extrabold text-base tracking-tight">
-            FYT<span className="text-blue-600">LOCALIZATION</span>
-          </span>
-        </Link>
+        <BrandLogo />
         <Link href="/login" className="text-xs font-semibold text-blue-600 hover:underline">
           Already registered? Sign In →
         </Link>
@@ -61,7 +56,7 @@ export default function RegisterPage() {
               </div>
               <h2 className="text-xl font-bold text-slate-900">Registration Complete</h2>
               <p className="text-xs text-slate-600">
-                Your account has been created.
+                Your member account has been created.
               </p>
               <div className="pt-2">
                 <button
@@ -75,36 +70,10 @@ export default function RegisterPage() {
           ) : (
             <>
               <div className="text-center space-y-1">
-                <h1 className="text-2xl font-bold text-slate-900">Create Account</h1>
+                <h1 className="text-2xl font-bold text-slate-900">Create Member Account</h1>
                 <p className="text-xs text-slate-500">
-                  Select your role to get started
+                  Join our community of translators, editors, and speech specialists
                 </p>
-              </div>
-
-              {/* 2 Roles: Member & Admin */}
-              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl text-xs font-semibold">
-                <button
-                  type="button"
-                  onClick={() => setRole("member")}
-                  className={`py-2 rounded-lg transition-all ${
-                    role === "member"
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  Member
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("admin")}
-                  className={`py-2 rounded-lg transition-all ${
-                    role === "admin"
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  Admin
-                </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -172,7 +141,7 @@ export default function RegisterPage() {
                     <span className="inline-block animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
                   ) : (
                     <>
-                      <span>Register as {role === "admin" ? "Admin" : "Member"}</span>
+                      <span>Create Member Account</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}

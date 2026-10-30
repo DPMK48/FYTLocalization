@@ -10,12 +10,8 @@ export default function TermsOfServicePage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar />
 
-      <header className="bg-[#003cd6] text-white py-14 lg:py-20 relative overflow-hidden">
+      <header className="bg-[#0000FF] text-white py-14 lg:py-20 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-teal-300 text-xs font-semibold uppercase tracking-wider mb-3">
-            <FileText className="w-3.5 h-3.5" />
-            Terms of Service
-          </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
             Terms & Conditions
           </h1>

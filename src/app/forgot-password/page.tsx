@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Mail, ArrowRight, CheckCircle2, Lock } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -21,17 +22,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <div className="py-4 px-6 sm:px-10 bg-white border-b border-slate-200 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <svg width="32" height="32" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="10" fill="#0A1838" />
-            <path d="M11 28L19 14H25L17 28H11Z" fill="#00D2B4" />
-            <path d="M21 28L29 14H35L27 28H21Z" fill="#0056F5" />
-            <circle cx="31" cy="30" r="3" fill="#00D2B4" />
-          </svg>
-          <span className="font-extrabold text-base tracking-tight">
-            FYT<span className="text-blue-600">LOCALIZATION</span>
-          </span>
-        </Link>
+        <BrandLogo />
         <Link href="/login" className="text-xs font-semibold text-blue-600 hover:underline">
           ← Back to Login
         </Link>

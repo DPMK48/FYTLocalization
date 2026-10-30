@@ -135,7 +135,7 @@ export default function QuoteCalculator({ onOpenOrderModal }: QuoteCalculatorPro
                     { id: "translation", label: "Translation" },
                     { id: "transcription", label: "Transcription" },
                     { id: "subtitle", label: "Subtitles" },
-                    { id: "localization", label: "AI Localization" },
+                    { id: "localization", label: "AI Data Services" },
                     { id: "interpretation", label: "Interpretation" },
                   ].map((s) => (
                     <button

@@ -8,7 +8,9 @@ import {
   ArrowUp,
   ArrowRight,
 } from "lucide-react";
-import { TwitterIcon, LinkedInIcon, FacebookIcon } from "@/components/Icons";
+import { TwitterIcon, LinkedInIcon, FacebookIcon, WhatsAppIcon } from "@/components/Icons";
+import BrandLogo from "@/components/BrandLogo";
+import { SITE_CONFIG } from "@/data/siteConfig";
 
 interface FooterProps {
   onOpenOrderModal?: (serviceName?: string) => void;
@@ -20,77 +22,79 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
   };
 
   return (
-    <footer className="bg-[#0022a3] text-blue-100 text-sm border-t border-blue-800">
+    <footer className="bg-[#2b2c2e] text-slate-300 text-sm border-t border-slate-700/80">
       {/* Upper Footer Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           
           {/* Company Brand Column */}
-          <div className="lg:col-span-4 space-y-4">
-            <Link href="/" className="flex items-center gap-3">
-              <svg
-                width="36"
-                height="36"
-                viewBox="0 0 44 44"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect width="44" height="44" rx="10" fill="#ffffff" />
-                <path d="M11 28L19 14H25L17 28H11Z" fill="#00D2B4" />
-                <path d="M21 28L29 14H35L27 28H21Z" fill="#0056F5" />
-                <circle cx="31" cy="30" r="3" fill="#00D2B4" />
-              </svg>
-              <div className="flex flex-col">
-                <div className="flex items-center tracking-tight font-extrabold text-lg text-white">
-                  <span>FYT</span>
-                  <span className="text-teal-300">LOCALIZATION</span>
-                </div>
-                <span className="text-[8px] tracking-widest uppercase font-semibold text-blue-200 -mt-1">
-                  TRANSLATION COMPANY
-                </span>
-              </div>
-            </Link>
+          <div className="lg:col-span-5 space-y-4">
+            {/* 1.4: Official Logo */}
+            <div className="bg-white/95 rounded-xl p-2.5 inline-block shadow-sm">
+              <BrandLogo />
+            </div>
 
-            <p className="text-xs sm:text-sm text-blue-100 leading-relaxed max-w-sm">
-              Certified language services bridging communication worldwide with accuracy and cultural precision.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-sm">
+              {SITE_CONFIG.tagline} Certified language and AI data solutions bridging communication worldwide with cultural precision.
             </p>
 
+            {/* Compliance & Trust Badges */}
+            <div className="pt-1 flex flex-wrap gap-2 text-[11px] text-slate-300">
+              <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 flex items-center gap-1.5 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                CAC-Registered (Nigeria)
+              </span>
+              <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 flex items-center gap-1.5 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                NDPC Licensed & Compliant
+              </span>
+              <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 flex items-center gap-1.5 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+                NDPA & GDPR Aligned
+              </span>
+            </div>
+
+            {/* 1.5: Social Icons driven from SITE_CONFIG */}
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://www.linkedin.com/company/fytlocalization/"
+                href={SITE_CONFIG.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-blue-900 border border-blue-700 text-white hover:bg-blue-600 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-[#0000FF] hover:border-[#0000FF] flex items-center justify-center transition-colors"
                 aria-label="LinkedIn"
+                title="Follow FYT Localization on LinkedIn"
               >
                 <LinkedInIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://x.com/fytlocalization"
+                href={SITE_CONFIG.social.x}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-blue-900 border border-blue-700 text-white hover:bg-blue-600 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-[#0000FF] hover:border-[#0000FF] flex items-center justify-center transition-colors"
                 aria-label="Twitter/X"
+                title="Follow FYT Localization on X"
               >
                 <TwitterIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://www.facebook.com/people/Fytlocalization/61583295960480/"
+                href={SITE_CONFIG.social.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-blue-900 border border-blue-700 text-white hover:bg-blue-600 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-[#0000FF] hover:border-[#0000FF] flex items-center justify-center transition-colors"
                 aria-label="Facebook"
+                title="Follow FYT Localization on Facebook"
               >
                 <FacebookIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://wa.me/message/OIYPQ375X3HKP1"
+                href={SITE_CONFIG.social.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-blue-900 border border-blue-700 text-white hover:bg-emerald-600 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-[#04ddb2] hover:border-[#04ddb2] flex items-center justify-center transition-colors"
                 aria-label="WhatsApp"
+                title="Chat with us on WhatsApp"
               >
-                <Phone className="w-4 h-4" />
+                <WhatsAppIcon className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -104,6 +108,11 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
               <li>
                 <Link href="/" className="hover:text-teal-300 transition-colors">
                   Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/about-us" className="hover:text-teal-300 transition-colors">
+                  About Us
                 </Link>
               </li>
               <li>
@@ -139,21 +148,21 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-teal-300 shrink-0" />
                 <a
-                  href="mailto:support@fytlocalization.com"
+                  href={`mailto:${SITE_CONFIG.contact.email}`}
                   className="hover:text-white transition-colors"
                 >
-                  support@fytlocalization.com
+                  {SITE_CONFIG.contact.email}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                 <a
-                  href="https://wa.me/message/OIYPQ375X3HKP1"
+                  href={SITE_CONFIG.contact.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  WhatsApp Support
+                  WhatsApp: {SITE_CONFIG.contact.phoneDisplay}
                 </a>
               </div>
             </div>
@@ -163,13 +172,13 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
       </div>
 
       {/* Bottom Bar & Legal */}
-      <div className="border-t border-blue-800 bg-[#001c87] py-6">
+      <div className="border-t border-slate-700/80 bg-[#242527] py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <div>
-            © 2026 <strong className="text-white">FYTLOCALIZATION</strong>. All rights reserved.
+            © 2026 <strong className="text-white">{SITE_CONFIG.officialName}</strong>. All rights reserved.
           </div>
 
-          <div className="flex items-center gap-6 text-blue-200">
+          <div className="flex items-center gap-6 text-slate-400">
             <Link href="/terms" className="hover:text-white transition-colors">
               Terms of Service
             </Link>

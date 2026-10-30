@@ -4,6 +4,10 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, ArrowRight, User } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
+
+import { switchActiveMember } from "@/data/userProfileStore";
+import { getStoredMembers } from "@/data/membersData";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,6 +23,19 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("fyt_logged_in", "true");
       localStorage.setItem("fyt_user_role", role);
+
+      if (role === "admin") {
+        switchActiveMember("adminfytlocalization-com");
+      } else {
+        const members = getStoredMembers();
+        const matched = members.find(
+          (m) =>
+            m.username.toLowerCase() === email.toLowerCase() ||
+            m.name.toLowerCase() === email.toLowerCase() ||
+            `${m.username}@fytlocalization.com`.toLowerCase() === email.toLowerCase()
+        );
+        switchActiveMember(matched ? matched.username : "hamdan");
+      }
     }
 
     setTimeout(() => {
@@ -31,6 +48,11 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("fyt_logged_in", "true");
       localStorage.setItem("fyt_user_role", selectedRole);
+      if (selectedRole === "admin") {
+        switchActiveMember("adminfytlocalization-com");
+      } else {
+        switchActiveMember("hamdan");
+      }
     }
     router.push("/dashboard");
   };
@@ -39,17 +61,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       {/* Top Header */}
       <div className="py-4 px-6 sm:px-10 bg-white border-b border-slate-200 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <svg width="32" height="32" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="8" fill="#003cd6" />
-            <path d="M11 28L19 14H25L17 28H11Z" fill="#ffffff" />
-            <path d="M21 28L29 14H35L27 28H21Z" fill="#93c5fd" />
-            <circle cx="31" cy="30" r="3" fill="#ffffff" />
-          </svg>
-          <span className="font-extrabold text-base tracking-tight">
-            FYT<span className="text-blue-600">LOCALIZATION</span>
-          </span>
-        </Link>
+        <BrandLogo />
         <Link
           href="/"
           className="text-xs font-semibold text-slate-600 hover:text-blue-600"
@@ -174,12 +186,20 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="text-center text-xs text-slate-500 pt-1">
-            Need an account?{" "}
-            <Link href="/register" className="text-blue-600 font-semibold hover:underline">
-              Register here
-            </Link>
-          </div>
+          {role === "member" ? (
+            <div className="text-center text-xs text-slate-500 pt-1">
+              Need an account?{" "}
+              <Link href="/register" className="text-blue-600 font-semibold hover:underline">
+                Register here
+              </Link>
+            </div>
+          ) : (
+            <div className="text-center text-xs text-slate-400 pt-1 px-2">
+              <span className="text-[11px] leading-relaxed block text-slate-500">
+                Admin accounts are default and pre-configured. Admins can sign in and assign roles from the dashboard.
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
