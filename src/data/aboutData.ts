@@ -48,7 +48,7 @@ export const INITIAL_TEAM: TeamMember[] = [
   {
     id: "team-1",
     name: "Fatima Yusuf",
-    role: "Founder & Lead Linguistic Director",
+    role: "Co-founder",
     bio: "Pioneering African language inclusion across digital interfaces and machine learning models. Over a decade coordinating high-stakes diplomatic translation and pan-African speech corpora.",
     image: "/images/africa_hero.jpg", // TODO: replace with client asset
     socials: {
@@ -192,7 +192,7 @@ export const INITIAL_PAST_PROJECTS: PastProject[] = [
   },
 ];
 
-const STORAGE_KEY = "fyt_about_data_store_v3";
+const STORAGE_KEY = "fyt_about_data_store_v4";
 const EVENT_KEY = "fyt_about_data_updated";
 
 export function getStoredAboutData() {

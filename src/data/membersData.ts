@@ -2,6 +2,7 @@ export interface Member {
   id: string;
   username: string;
   name: string;
+  email?: string;
   role: string;
   avatarBg: string;
   avatarText: string;
@@ -25,7 +26,7 @@ export const INITIAL_MEMBERS: Member[] = [
     id: "m-1",
     username: "adminfytlocalization-com",
     name: "Fatima Yusuf",
-    role: "Founder & Lead Linguistic Director",
+    role: "Co-founder",
     avatarBg: "bg-blue-600",
     avatarText: "FY",
     joinedDate: "Aug 2026",
@@ -41,112 +42,11 @@ export const INITIAL_MEMBERS: Member[] = [
     badge: "Admin",
     isAdmin: true,
   },
-  {
-    id: "m-2",
-    username: "hamdan",
-    name: "Hamdan",
-    role: "Senior African Languages Specialist",
-    avatarBg: "bg-emerald-600",
-    avatarText: "HA",
-    joinedDate: "Jun 2024",
-    lastActive: "Active 2 hours ago",
-    isOnline: true,
-    location: "Nairobi, Kenya",
-    nativeLanguage: "Swahili & English",
-    languagePairs: ["Swahili ↔ English", "Arabic → Swahili", "Somali → English"],
-    skills: ["Translation", "Interpretation", "Subtitles"],
-    bio: "Specialized in East African lingua francas, simultaneous conference interpretation, and media subtitling. Expert in Swahili dialect variations and Bantu linguistic morphology.",
-    completedJobs: 312,
-    rating: 4.9,
-    badge: "Senior Linguist",
-    isAdmin: false,
-    isCopywriter: true,
-  },
-  {
-    id: "m-3",
-    username: "dorathy",
-    name: "Dorathy",
-    role: "Public Policy & Legal Translator",
-    avatarBg: "bg-purple-600",
-    avatarText: "DO",
-    joinedDate: "Aug 2026",
-    lastActive: "Active a week ago",
-    isOnline: false,
-    location: "Lagos, Nigeria",
-    nativeLanguage: "Yoruba & English",
-    languagePairs: ["Yoruba ↔ English", "Igbo → English"],
-    skills: ["Translation", "Transcription", "Localization/AI Services"],
-    bio: "Legal terminology specialist and public sector communications consultant. Experienced in civic tax education translation, fintech onboarding flows, and court transcriptions.",
-    completedJobs: 195,
-    rating: 4.95,
-    badge: "Vetted Pro",
-    isAdmin: false,
-  },
-  {
-    id: "m-4",
-    username: "spectre",
-    name: "Spectre",
-    role: "AI Localization & Speech Annotator",
-    avatarBg: "bg-indigo-600",
-    avatarText: "SP",
-    joinedDate: "Aug 2026",
-    lastActive: "Active 2 weeks ago",
-    isOnline: false,
-    location: "Accra, Ghana",
-    nativeLanguage: "Twi & English",
-    languagePairs: ["Twi ↔ English", "French → English", "Ewe → English"],
-    skills: ["Localization/AI Services", "Transcription", "Subtitles"],
-    bio: "Machine learning post-editor and speech corpora curator. Works extensively on acoustic model training, accent annotation, and automated subtitle synchronization.",
-    completedJobs: 142,
-    rating: 4.88,
-    badge: "Vetted Pro",
-    isAdmin: false,
-  },
-  {
-    id: "m-5",
-    username: "kelvin1",
-    name: "Kelvin",
-    role: "Audio Transcription & Media Captions Expert",
-    avatarBg: "bg-amber-600",
-    avatarText: "KE",
-    joinedDate: "Sep 2026",
-    lastActive: "Active 3 days ago",
-    isOnline: false,
-    location: "Johannesburg, South Africa",
-    nativeLanguage: "Zulu & English",
-    languagePairs: ["Zulu ↔ English", "Xhosa → English", "Afrikaans → English"],
-    skills: ["Transcription", "Subtitles", "Translation"],
-    bio: "High-speed multi-speaker audio transcriber and SDH captioner. Certified in broadcast subtitles and Southern African regional dialect nuances.",
-    completedJobs: 98,
-    rating: 4.9,
-    badge: "Verified Member",
-    isAdmin: false,
-  },
-  {
-    id: "m-6",
-    username: "lawan-dadinkowa",
-    name: "Lawan Dadinkowa",
-    role: "Media Localization Partner & Advisor",
-    avatarBg: "bg-teal-600",
-    avatarText: "LD",
-    joinedDate: "Jul 2024",
-    lastActive: "Active yesterday",
-    isOnline: true,
-    location: "Kano, Nigeria",
-    nativeLanguage: "Hausa & English",
-    languagePairs: ["Hausa ↔ English", "Fulani → Hausa"],
-    skills: ["Interpretation", "Translation", "Subtitles"],
-    bio: "CEO of Dadinkowa Media and enterprise translation partner with FYT. Longstanding collaborator on high-volume broadcast transcription, radio dubbing, and regional media syndication.",
-    completedJobs: 240,
-    rating: 5.0,
-    badge: "Senior Linguist",
-    isAdmin: false,
-  },
 ];
 
 export const MEMBERS = INITIAL_MEMBERS;
 
-const STORAGE_KEY = "fyt_members_store";
+const STORAGE_KEY = "fyt_members_store_v3";
 const EVENT_KEY = "fyt_members_updated";
 
 export function getStoredMembers(): Member[] {
@@ -186,6 +86,41 @@ export function useMembersStore() {
 
   useEffect(() => {
     sync();
+
+    // Fetch live approved members from database
+    fetch("/api/members")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.members) && data.members.length > 0) {
+          const liveMembers: Member[] = data.members.map((u: any, idx: number) => ({
+            id: u._id || `m-${idx + 1}`,
+            username: u.username,
+            name: u.name,
+            email: u.email,
+            role: u.role === "admin" ? "Co-founder" : (u.specialty || u.role || "Linguist & Specialist"),
+            avatarBg: u.avatarBg || "bg-blue-600",
+            avatarText: u.avatarText || u.name?.slice(0, 2).toUpperCase() || "MB",
+            joinedDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Aug 2026",
+            lastActive: u.isOnline ? "Active now" : "Recently",
+            isOnline: u.isOnline ?? true,
+            location: u.location || "Bauchi State, Nigeria",
+            nativeLanguage: u.nativeLanguage || "Hausa & English",
+            languagePairs: u.languagePairs || [],
+            skills: u.skills || (u.specialty ? [u.specialty] : ["Translation"]),
+            bio: u.bio || "",
+            completedJobs: u.completedJobs || 0,
+            rating: u.rating || 5.0,
+            badge: u.role === "admin" || u.isAdmin ? "Admin" : (u.badge || "Verified Member"),
+            isAdmin: u.role === "admin" || u.isAdmin === true,
+            isCopywriter: u.isCopywriter === true,
+          }));
+
+          saveStoredMembers(liveMembers);
+          setMembers(liveMembers);
+        }
+      })
+      .catch((err) => console.warn("Live members fetch error", err));
+
     const handleUpdate = () => sync();
     window.addEventListener(EVENT_KEY, handleUpdate);
     window.addEventListener("storage", handleUpdate);

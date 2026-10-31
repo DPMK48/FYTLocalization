@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
@@ -43,7 +43,126 @@ export default function DashboardPage() {
   const { pending: pendingReviews, approveReview, rejectReview } = useTestimonialsStore();
   const { submissions, updateStatus } = useSubmissionsStore();
 
-  const [activeTab, setActiveTab] = useState<"directory" | "reviews" | "quotes">("directory");
+  const [activeTab, setActiveTab] = useState<"directory" | "reviews" | "quotes" | "approvals">("directory");
+  const [pendingStaff, setPendingStaff] = useState<any[]>([]);
+  const [loadingApprovals, setLoadingApprovals] = useState(false);
+
+  const fetchPendingStaff = useCallback(async () => {
+    if (!profile.isAdmin) return;
+    try {
+      setLoadingApprovals(true);
+      const res = await fetch("/api/admin/approve-member");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.pendingMembers)) {
+        setPendingStaff(
+          data.pendingMembers.filter(
+            (m: any) =>
+              m.role !== "admin" &&
+              !m.isAdmin &&
+              m.username !== "adminfytlocalization-com" &&
+              m.status !== "approved"
+          )
+        );
+      }
+    } catch (err) {
+      console.warn("Failed to load pending staff registrations", err);
+    } finally {
+      setLoadingApprovals(false);
+    }
+  }, [profile.isAdmin]);
+
+  useEffect(() => {
+    fetchPendingStaff();
+  }, [fetchPendingStaff]);
+
+  const handleApproveStaff = async (memberId: string, name: string, username?: string) => {
+    // 1. Immediately remove from pending staff state so the notification banner, badge count, and queue card disappear right away!
+    setPendingStaff((prev) =>
+      prev.filter((m) => m._id !== memberId && m.id !== memberId && m.username !== username)
+    );
+
+    // 2. Also remove any staff approval in-app notifications from storage
+    try {
+      const stored = localStorage.getItem("fyt_user_notifications_v2");
+      if (stored) {
+        const notifs = JSON.parse(stored);
+        const filtered = notifs.filter(
+          (n: any) =>
+            !n.text.toLowerCase().includes(name.toLowerCase()) &&
+            !n.text.toLowerCase().includes((username || "").toLowerCase()) &&
+            !n.text.toLowerCase().includes("pending approval") &&
+            !n.text.toLowerCase().includes("awaiting approval")
+        );
+        localStorage.setItem("fyt_user_notifications_v2", JSON.stringify(filtered));
+        window.dispatchEvent(new Event("fyt_profile_updated"));
+      }
+    } catch (e) {
+      console.warn("Error cleaning notification", e);
+    }
+
+    try {
+      const res = await fetch("/api/admin/approve-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId, username, action: "approve" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`${name} has been approved as staff and can now sign in!`);
+        fetchPendingStaff();
+        window.dispatchEvent(new Event("fyt_members_updated"));
+      } else {
+        showToast(data.error || "Failed to approve staff member.");
+        fetchPendingStaff();
+      }
+    } catch {
+      showToast("Error processing approval.");
+      fetchPendingStaff();
+    }
+  };
+
+  const handleRejectStaff = async (memberId: string, name: string, username?: string) => {
+    // 1. Immediately remove from pending staff state
+    setPendingStaff((prev) =>
+      prev.filter((m) => m._id !== memberId && m.id !== memberId && m.username !== username)
+    );
+
+    // 2. Clean in-app notifications
+    try {
+      const stored = localStorage.getItem("fyt_user_notifications_v2");
+      if (stored) {
+        const notifs = JSON.parse(stored);
+        const filtered = notifs.filter(
+          (n: any) =>
+            !n.text.toLowerCase().includes(name.toLowerCase()) &&
+            !n.text.toLowerCase().includes((username || "").toLowerCase())
+        );
+        localStorage.setItem("fyt_user_notifications_v2", JSON.stringify(filtered));
+        window.dispatchEvent(new Event("fyt_profile_updated"));
+      }
+    } catch (e) {
+      console.warn("Error cleaning notification", e);
+    }
+
+    try {
+      const res = await fetch("/api/admin/approve-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId, username, action: "reject" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Registration for ${name} was rejected.`);
+        fetchPendingStaff();
+      } else {
+        showToast(data.error || "Failed to reject registration.");
+        fetchPendingStaff();
+      }
+    } catch {
+      showToast("Error processing rejection.");
+      fetchPendingStaff();
+    }
+  };
 
   const [filterName, setFilterName] = useState("");
   const [filterNickname, setFilterNickname] = useState("");
@@ -252,6 +371,26 @@ export default function DashboardPage() {
                 </span>
               )}
             </button>
+
+            {/* Staff Member Approvals Tab (Admin Only) */}
+            {profile.isAdmin && (
+              <button
+                onClick={() => setActiveTab("approvals")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 relative ${
+                  activeTab === "approvals"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                <span>Staff Approvals</span>
+                {pendingStaff.length > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {pendingStaff.length}
+                  </span>
+                )}
+              </button>
+            )}
           </div>
 
           <Link href="/profile" className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-1">
@@ -259,6 +398,31 @@ export default function DashboardPage() {
             <ExternalLink className="w-3 h-3" />
           </Link>
         </div>
+
+        {/* Staff Registration Approval Banner for Admins */}
+        {profile.isAdmin && pendingStaff.length > 0 && (
+          <div className="bg-amber-50 border border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                  Admin Action: {pendingStaff.length} Staff Registration{pendingStaff.length > 1 ? "s" : ""} Awaiting Approval
+                </h2>
+                <p className="text-xs text-amber-800">
+                  New staff members cannot log in or access the directory until verified by an Administrator.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab("approvals")}
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold whitespace-nowrap transition-colors"
+            >
+              Review Registrations →
+            </button>
+          </div>
+        )}
 
         {/* Editorial CMS Review Queue Banner for Admins */}
         {profile.isAdmin && pendingPosts.length > 0 && (
@@ -803,6 +967,101 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ================= TAB 4: STAFF APPROVALS QUEUE (ADMIN ONLY) ================= */}
+        {activeTab === "approvals" && profile.isAdmin && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-2">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-amber-500" />
+                  <span>Pending Staff Registrations</span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Review new staff registrations before approving their access to the FYT Localization platform.
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200">
+                {pendingStaff.length} Awaiting Verification
+              </span>
+            </div>
+
+            {loadingApprovals ? (
+              <div className="py-12 text-center text-xs text-slate-500">
+                <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2" />
+                Loading pending registrations...
+              </div>
+            ) : pendingStaff.length === 0 ? (
+              <div className="py-12 text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-800">All Caught Up!</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  There are no pending staff member registrations. Any new applicants will appear here for verification.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {pendingStaff.map((staff: any) => (
+                  <div key={staff._id || staff.username} className="py-4 space-y-3">
+                    <div className="flex items-start justify-between flex-wrap gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-200">
+                          {staff.name?.slice(0, 2).toUpperCase() || "ST"}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-slate-900 text-sm">{staff.name}</h3>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                              Pending Review
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500">{staff.email} • @{staff.username}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleRejectStaff(staff._id, staff.name, staff.username)}
+                          className="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleApproveStaff(staff._id, staff.name, staff.username)}
+                          className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Approve Staff Member</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200/80 text-xs">
+                      <div>
+                        <span className="text-slate-400 block text-[10px] uppercase font-bold">Selected Specialty</span>
+                        <strong className="text-slate-800">{staff.specialty || "Translation & Localization"}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px] uppercase font-bold">Account Role</span>
+                        <span className="text-slate-800 capitalize">{staff.role || "Member"}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px] uppercase font-bold">Registration Date</span>
+                        <span className="text-slate-800">
+                          {staff.createdAt ? new Date(staff.createdAt).toLocaleDateString() : "Recent"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

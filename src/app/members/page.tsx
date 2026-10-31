@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useMembersStore, Member } from "@/data/membersData";
@@ -17,11 +18,25 @@ import {
   MessageSquare,
   ExternalLink,
   CheckCircle2,
+  Lock,
 } from "lucide-react";
 
 export default function MembersDirectoryPage() {
+  const router = useRouter();
+  const [authChecking, setAuthChecking] = useState(true);
   const { profile, activeNowString, addNotification } = useUserProfile();
   const { members, toggleAdmin, toggleCopywriter } = useMembersStore();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const loggedIn = localStorage.getItem("fyt_logged_in") === "true";
+      if (!loggedIn) {
+        router.replace("/login?redirect=/members");
+        return;
+      }
+      setAuthChecking(false);
+    }
+  }, [router]);
 
   const [filterName, setFilterName] = useState("");
   const [filterNickname, setFilterNickname] = useState("");
@@ -107,6 +122,18 @@ export default function MembersDirectoryPage() {
       return 0;
     });
 
+  if (authChecking) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#f4f6f9] text-slate-800">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f4f6f9] text-slate-800">
       <Navbar />
@@ -123,9 +150,15 @@ export default function MembersDirectoryPage() {
           {/* Main Column */}
           <div className="lg:col-span-8 bg-white border border-slate-200 rounded-sm p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center justify-between">
-              <h1 className="text-base font-bold text-slate-900">
-                All Members
-              </h1>
+              <div>
+                <h1 className="text-base font-bold text-slate-900">
+                  All Members & Staff Directory
+                </h1>
+                <p className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5">
+                  <Lock className="w-3 h-3 text-slate-400" />
+                  <span>Profiles are restricted to individual owners. Colleague collaboration is available via Direct Messages.</span>
+                </p>
+              </div>
               <Link href="/dashboard" className="text-xs text-blue-600 font-semibold hover:underline">
                 ← Back to Dashboard
               </Link>

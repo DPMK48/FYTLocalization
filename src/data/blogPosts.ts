@@ -17,7 +17,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "African Languages in the Digital Age: How Local Voices are Shaping AI",
     category: "AI & Localization",
     author: "Fatima Yusuf",
-    authorRole: "Founder & Lead Linguistic Director",
+    authorRole: "Co-founder",
     date: "September 4, 2026",
     readTime: "6 min read",
     excerpt:
@@ -55,7 +55,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "When Languages Become Bridges: How Africa Learned to Speak Across Difference",
     category: "Translation Strategy",
     author: "Fatima Yusuf",
-    authorRole: "Founder & Lead Linguistic Director",
+    authorRole: "Co-founder",
     date: "August 20, 2026",
     readTime: "5 min read",
     excerpt:
@@ -109,7 +109,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Translation Accuracy Isn't About Words | It's About Meaning",
     category: "Translation Strategy",
     author: "Fatima Yusuf",
-    authorRole: "Founder & Lead Linguistic Director",
+    authorRole: "Co-founder",
     date: "July 25, 2026",
     readTime: "5 min read",
     excerpt:

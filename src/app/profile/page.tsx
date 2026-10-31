@@ -44,6 +44,12 @@ export default function ProfilePage() {
                 {profile.nickname}
               </span>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 p-3.5 bg-white">
+              <span className="font-semibold text-slate-700">{profile.isAdmin ? "Role" : "Specialty"}</span>
+              <span className="sm:col-span-2 text-slate-900 font-medium">
+                {profile.role}
+              </span>
+            </div>
           </div>
         </div>
       </main>

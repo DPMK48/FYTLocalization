@@ -23,40 +23,10 @@ export interface QuoteSubmission {
   status: "pending" | "reviewed" | "responded";
 }
 
-const STORAGE_KEY = "fyt_quote_submissions";
+const STORAGE_KEY = "fyt_quote_submissions_v2";
 const EVENT_KEY = "fyt_quote_submissions_updated";
 
-export const INITIAL_SUBMISSIONS: QuoteSubmission[] = [
-  {
-    id: "quote-1",
-    category: "localization",
-    service: "Translation",
-    subject: "[Quote Request - Localization Services] Translation",
-    createdAt: "2026-10-17 14:32",
-    fullName: "Musa Al-Hassan",
-    email: "musa@africadynamics.org",
-    volume: "15,000 words",
-    notes: "Agricultural policy manuals translation from English to Hausa and Swahili. Requires certified review.",
-    sourceLang: "English",
-    targetLang: "Hausa, Swahili",
-    status: "reviewed",
-  },
-  {
-    id: "quote-2",
-    category: "ai-data",
-    service: "Audio Collection",
-    subject: "[Quote Request - AI Data Services] Audio Collection",
-    createdAt: "2026-10-18 09:15",
-    fullName: "Elena Rostova",
-    email: "e.rostova@speechtech-labs.ai",
-    volume: "120 audio hours",
-    notes: "Spontaneous conversational recordings in West African English and Yoruba. 48kHz WAV with time-aligned transcripts.",
-    dataType: "Audio (Spontaneous speech)",
-    targetRegion: "Lagos, Ibadan, and Abuja urban centers",
-    collectionTool: "Mobile recording app with noise isolation",
-    status: "pending",
-  },
-];
+export const INITIAL_SUBMISSIONS: QuoteSubmission[] = [];
 
 export function getStoredSubmissions(): QuoteSubmission[] {
   if (typeof window === "undefined") return INITIAL_SUBMISSIONS;

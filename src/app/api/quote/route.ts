@@ -1,5 +1,21 @@
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/mailer";
+import { connectToDatabase } from "@/lib/mongodb";
+import { Quote } from "@/models/Quote";
+
+export async function GET() {
+  try {
+    await connectToDatabase();
+    const quotes = await Quote.find({}).sort({ createdAt: -1 }).lean();
+    return NextResponse.json({ success: true, quotes });
+  } catch (error) {
+    console.error("[Quote API GET Error]", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch quotes" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -24,6 +40,28 @@ export async function POST(request: Request) {
       category === "ai-data" ? "AI Data Services" : "Localization Services";
     const subject = `[Quote Request - ${categoryTitle}] ${service}`;
     const referenceId = `FYT-${Date.now().toString().slice(-6)}`;
+
+    // 1. Save directly to MongoDB Atlas
+    try {
+      await connectToDatabase();
+      await Quote.create({
+        category,
+        service,
+        subject,
+        fullName,
+        email,
+        volume,
+        notes,
+        sourceLang,
+        targetLang,
+        dataType,
+        targetRegion,
+        collectionTool,
+        status: "pending",
+      });
+    } catch (dbError) {
+      console.error("[MongoDB Quote Save Warning]", dbError);
+    }
 
     const textContent = `
 New Quote Request on FYTLOCALIZATION:
@@ -108,13 +146,17 @@ Received at: ${new Date().toLocaleString()}
       </div>
     `;
 
-    // Transmit email via Truehost SMTP
-    await sendEmail({
-      replyTo: email,
-      subject,
-      text: textContent,
-      html: htmlContent,
-    });
+    // Transmit email via Truehost SMTP (if configured)
+    try {
+      await sendEmail({
+        replyTo: email,
+        subject,
+        text: textContent,
+        html: htmlContent,
+      });
+    } catch (mailErr) {
+      console.warn("[SMTP Dispatch Notice]", mailErr);
+    }
 
     return NextResponse.json(
       {

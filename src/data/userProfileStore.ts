@@ -19,6 +19,8 @@ export interface UserProfile {
   skills: string[];
   isAdmin: boolean;
   isCopywriter?: boolean;
+  bio?: string;
+  specialty?: string;
 }
 
 export interface NotificationItem {
@@ -46,7 +48,7 @@ export const FATIMA_PROFILE: UserProfile = {
   avatarUrl: null,
   coverUrl: null,
   email: "admin@fytlocalization.com",
-  role: "Founder & Lead Linguistic Director",
+  role: "Co-founder",
   joinedDate: "Aug 2026",
   lastActive: "Active now",
   isOnline: true,
@@ -56,49 +58,9 @@ export const FATIMA_PROFILE: UserProfile = {
   isAdmin: true,
 };
 
-export const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "notif-1",
-    text: "Hamdan submitted a blog draft 'When Language Sings, Clicks, and Changes Meaning' for your review.",
-    time: "10 mins ago",
-    read: false,
-    link: "/profile/posts",
-    type: "approval",
-  },
-  {
-    id: "notif-2",
-    text: "Your translation order #1082 was approved by QA coordinator.",
-    time: "2 hours ago",
-    read: false,
-    type: "system",
-  },
-  {
-    id: "notif-3",
-    text: "Welcome to FYTLOCALIZATION member community.",
-    time: "1 day ago",
-    read: true,
-    type: "system",
-  },
-];
+export const DEFAULT_NOTIFICATIONS: NotificationItem[] = [];
 
-export const DEFAULT_MESSAGES: DirectMessage[] = [
-  {
-    id: "msg-1",
-    sender: "Dorathy",
-    recipient: "adminfytlocalization-com",
-    text: "Hi Fatima, could you check the medical glossary for the Swahili project?",
-    time: "11:20 AM",
-    isSelf: false,
-  },
-  {
-    id: "msg-2",
-    sender: "You",
-    recipient: "dorathy",
-    text: "Yes, reviewing it now. Will update you shortly.",
-    time: "11:25 AM",
-    isSelf: true,
-  },
-];
+export const DEFAULT_MESSAGES: DirectMessage[] = [];
 
 export function getProfileForMember(username: string): UserProfile {
   const members = getStoredMembers();
@@ -132,42 +94,12 @@ export function getProfileForMember(username: string): UserProfile {
   };
 }
 
-export function getNotificationsForMember(username: string): NotificationItem[] {
-  if (username === "adminfytlocalization-com") {
-    return DEFAULT_NOTIFICATIONS;
-  }
-  return [
-    {
-      id: `notif-${username}-1`,
-      text: `Welcome ${username} to the FYTLOCALIZATION member portal.`,
-      time: "1 hour ago",
-      read: false,
-      type: "system",
-    },
-    {
-      id: `notif-${username}-2`,
-      text: "New localization task guidelines posted by Lead Linguistic Director.",
-      time: "Yesterday",
-      read: true,
-      type: "system",
-    },
-  ];
+export function getNotificationsForMember(username?: string): NotificationItem[] {
+  return [];
 }
 
-export function getMessagesForMember(username: string): DirectMessage[] {
-  if (username === "adminfytlocalization-com") {
-    return DEFAULT_MESSAGES;
-  }
-  return [
-    {
-      id: `msg-${username}-1`,
-      sender: "Fatima Yusuf",
-      recipient: username,
-      text: `Hello ${username}, welcome to your active team workspace! Let me know if you need anything.`,
-      time: "10:00 AM",
-      isSelf: false,
-    },
-  ];
+export function getMessagesForMember(username?: string): DirectMessage[] {
+  return [];
 }
 
 // LocalStorage helpers
@@ -176,15 +108,23 @@ export function getStoredProfile(): UserProfile {
   try {
     const raw = localStorage.getItem("fyt_user_profile");
     if (raw) {
-      return JSON.parse(raw);
+      const parsed: UserProfile = JSON.parse(raw);
+      // Migrate Fatima Yusuf's role to Co-founder if an old cached title exists
+      if (
+        parsed.nickname === "adminfytlocalization-com" ||
+        parsed.email === "admin@fytlocalization.com" ||
+        parsed.isAdmin ||
+        parsed.role === "Founder & Lead Linguistic Director"
+      ) {
+        parsed.role = "Co-founder";
+      } else if (parsed.specialty) {
+        parsed.role = parsed.specialty;
+      }
+      return parsed;
     }
     const loggedUsername = localStorage.getItem("fyt_logged_in_username");
     if (loggedUsername) {
       return getProfileForMember(loggedUsername);
-    }
-    const role = localStorage.getItem("fyt_user_role");
-    if (role === "member") {
-      return getProfileForMember("hamdan");
     }
     return FATIMA_PROFILE;
   } catch {
@@ -197,7 +137,26 @@ export function saveStoredProfile(partial: Partial<UserProfile>): UserProfile {
   try {
     const current = getStoredProfile();
     const updated = { ...current, ...partial };
-    localStorage.setItem("fyt_user_profile", JSON.stringify(updated));
+    
+    // Always enforce Co-founder for Fatima / Admin
+    if (
+      updated.nickname === "adminfytlocalization-com" ||
+      updated.email === "admin@fytlocalization.com" ||
+      updated.isAdmin ||
+      updated.role === "Founder & Lead Linguistic Director"
+    ) {
+      updated.role = "Co-founder";
+    } else if (updated.specialty) {
+      updated.role = updated.specialty;
+    }
+
+    try {
+      localStorage.setItem("fyt_user_profile", JSON.stringify(updated));
+    } catch (quotaErr) {
+      console.warn("Storage quota exceeded, storing in sessionStorage", quotaErr);
+      sessionStorage.setItem("fyt_user_profile", JSON.stringify(updated));
+    }
+
     window.dispatchEvent(new Event("fyt_profile_updated"));
     return updated;
   } catch {
@@ -208,7 +167,7 @@ export function saveStoredProfile(partial: Partial<UserProfile>): UserProfile {
 export function getStoredNotifications(): NotificationItem[] {
   if (typeof window === "undefined") return DEFAULT_NOTIFICATIONS;
   try {
-    const raw = localStorage.getItem("fyt_user_notifications");
+    const raw = localStorage.getItem("fyt_user_notifications_v2");
     if (!raw) return DEFAULT_NOTIFICATIONS;
     return JSON.parse(raw);
   } catch {
@@ -219,7 +178,7 @@ export function getStoredNotifications(): NotificationItem[] {
 export function saveStoredNotifications(notifs: NotificationItem[]) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem("fyt_user_notifications", JSON.stringify(notifs));
+    localStorage.setItem("fyt_user_notifications_v2", JSON.stringify(notifs));
     window.dispatchEvent(new Event("fyt_profile_updated"));
   } catch {
     // Ignore error
@@ -229,7 +188,7 @@ export function saveStoredNotifications(notifs: NotificationItem[]) {
 export function getStoredMessages(): DirectMessage[] {
   if (typeof window === "undefined") return DEFAULT_MESSAGES;
   try {
-    const raw = localStorage.getItem("fyt_user_messages");
+    const raw = localStorage.getItem("fyt_user_messages_v2");
     if (!raw) return DEFAULT_MESSAGES;
     return JSON.parse(raw);
   } catch {
@@ -240,7 +199,7 @@ export function getStoredMessages(): DirectMessage[] {
 export function saveStoredMessages(msgs: DirectMessage[]) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem("fyt_user_messages", JSON.stringify(msgs));
+    localStorage.setItem("fyt_user_messages_v2", JSON.stringify(msgs));
     window.dispatchEvent(new Event("fyt_profile_updated"));
   } catch {
     // Ignore error
