@@ -30,8 +30,8 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
           {/* Company Brand Column */}
           <div className="lg:col-span-5 space-y-4">
             {/* 1.4: Official Logo */}
-            <div className="bg-white/95 rounded-xl p-2.5 inline-block shadow-sm">
-              <BrandLogo />
+            <div className="inline-flex items-center bg-white/80 hover:bg-white/90 backdrop-blur-md rounded-lg px-2.5 py-1 border border-white/20 transition-all shadow-sm">
+              <BrandLogo variant="light" />
             </div>
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-sm">

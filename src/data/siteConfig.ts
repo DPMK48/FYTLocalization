@@ -11,6 +11,7 @@ export const SITE_CONFIG = {
   
   // Single Logo Asset Path (Swapping this file or URL updates the logo everywhere)
   logoPath: "/images/logo.png",
+  logoDarkPath: "/images/logo-white.png",
   logoAlt: "FYT Localization - Official Globe Logo",
 
   // Contact Information

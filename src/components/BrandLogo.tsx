@@ -21,19 +21,22 @@ export default function BrandLogo({
   className = "",
   showSubtitle = true,
 }: BrandLogoProps) {
+  const logoSrc =
+    variant === "dark"
+      ? SITE_CONFIG.logoDarkPath || "/images/logo-white.png"
+      : SITE_CONFIG.logoPath;
+
   return (
     <Link href="/" className={`inline-flex items-center gap-3 shrink-0 group ${className}`}>
       {/* Official PNG Asset (458 x 86) */}
       <div className="relative h-10 w-[214px] max-w-full">
         <Image
-          src={SITE_CONFIG.logoPath}
+          src={logoSrc}
           alt={SITE_CONFIG.logoAlt}
           fill
           priority
           sizes="214px"
-          className={`object-contain object-left transition-opacity ${
-            variant === "dark" ? "brightness-0 invert" : ""
-          }`}
+          className="object-contain object-left transition-opacity"
         />
       </div>
     </Link>
