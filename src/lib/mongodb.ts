@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -19,10 +17,13 @@ if (!global.mongooseCache) {
 }
 
 export async function connectToDatabase(): Promise<typeof mongoose> {
-  if (!MONGODB_URI) {
-    throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local"
-    );
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    const errorMsg =
+      "Missing MONGODB_URI environment variable on this server. Please configure MONGODB_URI in your Vercel Project Settings -> Environment Variables.";
+    console.error("[MongoDB Error]", errorMsg);
+    throw new Error(errorMsg);
   }
 
   if (cached.conn) {
@@ -33,17 +34,19 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
     const opts = {
       bufferCommands: false,
       dbName: "fytlocalization",
+      serverSelectionTimeoutMS: 6000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+    cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
       return mongooseInstance;
     });
   }
 
   try {
     cached.conn = await cached.promise;
-  } catch (e) {
+  } catch (e: any) {
     cached.promise = null;
+    console.error("[MongoDB Connection Failed]", e?.message || e);
     throw e;
   }
 

@@ -14,10 +14,10 @@ export interface ManagedBlogPost extends BlogPost {
   approvedBy?: string;
 }
 
-const STORAGE_KEY = "fyt_custom_cms_posts";
+const STORAGE_KEY = "fyt_custom_cms_posts_v4";
 const EVENT_KEY = "fyt_blog_updated";
 
-// Initialize with the existing 6 published articles
+// Initialize with the current published articles
 const DEFAULT_POSTS: ManagedBlogPost[] = INITIAL_BLOG_POSTS.map((post) => ({
   ...post,
   status: "published" as BlogPostStatus,

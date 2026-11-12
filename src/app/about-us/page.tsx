@@ -17,6 +17,8 @@ import {
   Compass,
   Building2,
   ExternalLink,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { TwitterIcon, LinkedInIcon, FacebookIcon, WhatsAppIcon } from "@/components/Icons";
 import { useAboutData, TeamMember, Certification, Partner } from "@/data/aboutData";
@@ -144,46 +146,71 @@ export default function AboutUsPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {team.map((member: TeamMember) => (
               <div
                 key={member.id}
-                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
+                className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
               >
                 <div>
-                  {/* Photo Thumbnail (8.2: With client asset placeholder) */}
-                  <div className="relative h-56 w-full rounded-xl overflow-hidden mb-4 bg-slate-100 border border-slate-200">
+                  {/* Photo Thumbnail */}
+                  <div className="relative h-80 w-full rounded-xl overflow-hidden mb-5 bg-slate-50 border border-slate-200 flex items-center justify-center p-2">
                     <Image
                       src={member.image}
                       alt={member.name}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-contain"
                     />
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
                     {member.name}
                   </h3>
-                  <p className="text-xs font-semibold text-blue-600 mb-2">
+                  <p className="text-xs font-semibold text-blue-600 mt-1 mb-3">
                     {member.role}
                   </p>
-                  <p className="text-xs text-slate-500 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">
                     {member.bio}
                   </p>
+
+                  {member.socials.email && (
+                    <div className="text-xs text-slate-500 mb-2 flex items-center gap-1.5 break-all">
+                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <a
+                        href={`mailto:${member.socials.email}`}
+                        className="hover:text-blue-600 transition-colors"
+                      >
+                        {member.socials.email}
+                      </a>
+                    </div>
+                  )}
+
+                  {member.phone && (
+                    <div className="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <a
+                        href={`tel:${member.phone.replace(/\s+/g, "")}`}
+                        className="hover:text-emerald-700 font-medium transition-colors"
+                      >
+                        {member.phone}
+                      </a>
+                    </div>
+                  )}
                 </div>
 
-                {/* Social Links */}
-                <div className="pt-4 mt-4 border-t border-slate-100 flex items-center gap-2">
+                {/* Social & External Links */}
+                <div className="pt-4 mt-4 border-t border-slate-100 flex items-center gap-2 flex-wrap">
                   {member.socials.linkedin && (
                     <a
                       href={member.socials.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-7 h-7 rounded-md bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
                       aria-label={`${member.name} LinkedIn`}
+                      title="LinkedIn Profile"
                     >
-                      <LinkedInIcon className="w-3.5 h-3.5" />
+                      <LinkedInIcon className="w-4 h-4" />
                     </a>
                   )}
                   {member.socials.x && (
@@ -191,10 +218,33 @@ export default function AboutUsPage() {
                       href={member.socials.x}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-7 h-7 rounded-md bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
                       aria-label={`${member.name} X`}
+                      title="Twitter / X Profile"
                     >
-                      <TwitterIcon className="w-3.5 h-3.5" />
+                      <TwitterIcon className="w-4 h-4" />
+                    </a>
+                  )}
+                  {member.socials.email && (
+                    <a
+                      href={`mailto:${member.socials.email}`}
+                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+                      aria-label={`${member.name} Email`}
+                      title={`Email: ${member.socials.email}`}
+                    >
+                      <Mail className="w-4 h-4" />
+                    </a>
+                  )}
+                  {member.website && (
+                    <a
+                      href={member.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+                      aria-label={`${member.name} Website`}
+                      title="Company Website"
+                    >
+                      <Globe2 className="w-4 h-4" />
                     </a>
                   )}
                 </div>
@@ -221,14 +271,14 @@ export default function AboutUsPage() {
                 className="bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-blue-400 transition-all flex flex-col justify-between group"
               >
                 <div>
-                  {/* Certificate Scan Placeholder */}
-                  <div className="relative h-44 w-full rounded-xl overflow-hidden mb-4 bg-white border border-slate-200 shadow-inner flex items-center justify-center">
+                  {/* Certificate / Regulatory Seal */}
+                  <div className="relative h-44 w-full rounded-xl overflow-hidden mb-4 bg-white border border-slate-200 shadow-xs flex items-center justify-center p-4">
                     <Image
                       src={cert.image}
                       alt={cert.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                      className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
 

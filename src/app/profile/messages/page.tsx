@@ -22,10 +22,13 @@ import {
 
 function MessagesContent() {
   const searchParams = useSearchParams();
-  const initialRecipient = searchParams.get("to") || "dorathy";
-
   const { profile, messages, sendMessage, sendMassMessage } = useUserProfile();
   const { members } = useMembersStore();
+
+  // Filter contacts excluding self
+  const contacts = members.filter((m) => m.username !== profile.nickname);
+  const initialRecipient =
+    searchParams.get("to") || (contacts.length > 0 ? contacts[0].username : "");
 
   const [activeRecipient, setActiveRecipient] = useState(initialRecipient);
   const [inputText, setInputText] = useState("");
@@ -45,8 +48,10 @@ function MessagesContent() {
     const to = searchParams.get("to");
     if (to) {
       setActiveRecipient(to);
+    } else if (!activeRecipient && contacts.length > 0) {
+      setActiveRecipient(contacts[0].username);
     }
-  }, [searchParams]);
+  }, [searchParams, contacts, activeRecipient]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,29 +61,40 @@ function MessagesContent() {
     scrollToBottom();
   }, [messages, activeRecipient]);
 
-  // Filter contacts excluding self
-  const contacts = members.filter((m) => m.username !== profile.nickname);
   const filteredContacts = contacts.filter(
     (c) =>
       c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const selectedMember = members.find((m) => m.username === activeRecipient) || contacts[0];
+  const selectedMember =
+    members.find((m) => m.username.toLowerCase() === activeRecipient.toLowerCase()) ||
+    contacts[0];
 
-  // Filter messages for current thread
+  // Filter messages for current thread between logged-in user and selected recipient
   const threadMessages = messages.filter((m) => {
-    if (m.recipient === activeRecipient) return true;
-    if (m.sender.toLowerCase().includes(selectedMember?.name.toLowerCase() || "")) return true;
-    if (!m.isSelf && selectedMember?.username === "dorathy" && m.sender === "Dorathy") return true;
-    return false;
+    if (!activeRecipient || !profile.nickname) return false;
+    const normMe = profile.nickname.toLowerCase();
+    const normOther = activeRecipient.toLowerCase();
+    const normSender = (m.sender === "You" ? normMe : m.sender).toLowerCase();
+    const normRecipient = (m.recipient || "").toLowerCase();
+
+    const isOutbound =
+      (normSender === normMe || m.isSelf) && normRecipient === normOther;
+    const isInbound =
+      (normSender === normOther ||
+        normSender.includes(selectedMember?.name.toLowerCase() || "___")) &&
+      (normRecipient === normMe || normRecipient === "you");
+
+    return isOutbound || isInbound;
   });
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
-    sendMessage(inputText.trim(), activeRecipient);
+    if (!inputText.trim() || !activeRecipient) return;
+    const text = inputText.trim();
     setInputText("");
+    await sendMessage(text, activeRecipient);
   };
 
   // 9.1: Handle toggle single member selection
@@ -106,11 +122,11 @@ function MessagesContent() {
   }, [profile.isAdmin, multiSelectMode]);
 
   // 9.1: Mass message submission (Admin Only)
-  const handleSendMassMessage = (e: React.FormEvent) => {
+  const handleSendMassMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile.isAdmin || !massMessageText.trim() || selectedUsernames.length === 0) return;
 
-    const count = sendMassMessage(massMessageText.trim(), selectedUsernames);
+    const count = await sendMassMessage(massMessageText.trim(), selectedUsernames);
     setMassSuccessToast(`Message broadcast to ${count} team members successfully!`);
     setMassMessageText("");
     setSelectedUsernames([]);
@@ -399,32 +415,40 @@ function MessagesContent() {
                     <p className="text-[11px]">Send a note below to start the conversation.</p>
                   </div>
                 ) : (
-                  threadMessages.map((m) => (
-                    <div
-                      key={m.id}
-                      className={`flex flex-col ${m.isSelf ? "items-end" : "items-start"}`}
-                    >
-                      <div className="flex items-end gap-2 max-w-[80%]">
-                        {!m.isSelf && (
-                          <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold shrink-0 mb-1">
-                            {m.sender.slice(0, 1)}
+                  threadMessages.map((m) => {
+                    const isSelf =
+                      m.isSelf ||
+                      m.sender === "You" ||
+                      m.sender.toLowerCase() === profile.nickname.toLowerCase();
+                    const senderLabel = isSelf ? "You" : (selectedMember?.name || m.sender);
+
+                    return (
+                      <div
+                        key={m.id}
+                        className={`flex flex-col ${isSelf ? "items-end" : "items-start"}`}
+                      >
+                        <div className="flex items-end gap-2 max-w-[80%]">
+                          {!isSelf && (
+                            <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold shrink-0 mb-1">
+                              {senderLabel.slice(0, 1).toUpperCase()}
+                            </div>
+                          )}
+                          <div
+                            className={`p-3 rounded-2xl text-xs leading-relaxed ${
+                              isSelf
+                                ? "bg-blue-600 text-white rounded-br-xs shadow-xs"
+                                : "bg-white border border-slate-200 text-slate-800 rounded-bl-xs shadow-xs"
+                            }`}
+                          >
+                            <p>{m.text}</p>
                           </div>
-                        )}
-                        <div
-                          className={`p-3 rounded-2xl text-xs leading-relaxed ${
-                            m.isSelf
-                              ? "bg-blue-600 text-white rounded-br-xs shadow-xs"
-                              : "bg-white border border-slate-200 text-slate-800 rounded-bl-xs shadow-xs"
-                          }`}
-                        >
-                          <p>{m.text}</p>
                         </div>
+                        <span className="text-[10px] text-slate-400 mt-1 px-1">
+                          {senderLabel} • {m.time}
+                        </span>
                       </div>
-                      <span className="text-[10px] text-slate-400 mt-1 px-1">
-                        {m.sender} • {m.time}
-                      </span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
                 <div ref={messagesEndRef} />
               </div>

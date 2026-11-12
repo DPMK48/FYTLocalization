@@ -78,12 +78,18 @@ export async function POST(request: Request) {
         coverUrl: user.coverUrl,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Login API Error]", error);
-    return NextResponse.json(
-      { success: false, error: "Server authentication error" },
-      { status: 500 }
-    );
+    const isConnError =
+      !process.env.MONGODB_URI ||
+      error?.name === "MongooseServerSelectionError" ||
+      error?.message?.includes("MONGODB_URI");
+
+    const message = isConnError
+      ? "Database connection failed. Please ensure MONGODB_URI is added in your Vercel Environment Variables and MongoDB Atlas Network Access allows 0.0.0.0/0."
+      : error?.message || "Server authentication error";
+
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 

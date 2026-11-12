@@ -7,11 +7,14 @@ export interface TeamMember {
   name: string;
   role: string;
   bio: string;
-  image: string; // Placeholder or client photo
+  image: string;
+  phone?: string;
+  website?: string;
   socials: {
     linkedin?: string;
     x?: string;
     email?: string;
+    website?: string;
   };
 }
 
@@ -47,48 +50,38 @@ export interface PastProject {
 export const INITIAL_TEAM: TeamMember[] = [
   {
     id: "team-1",
-    name: "Fatima Yusuf",
-    role: "Co-founder",
-    bio: "Pioneering African language inclusion across digital interfaces and machine learning models. Over a decade coordinating high-stakes diplomatic translation and pan-African speech corpora.",
-    image: "/images/africa_hero.jpg", // TODO: replace with client asset
+    name: "Fatima Yusuf Tomsu",
+    role: "Founder & Chief Executive Officer, fytlocalization",
+    bio: "Pioneering African language inclusion across digital interfaces and machine learning models. Over a decade coordinating high-stakes diplomatic translation, enterprise localization, and pan-African speech corpora.",
+    image: "/images/Fatima.jpeg",
+    phone: "+234 703 721 9213",
+    website: "https://fytlocalization.com",
     socials: {
-      linkedin: "https://www.linkedin.com/company/fytlocalization/",
-      x: "https://x.com/fytlocalization",
-      email: "admin@fytlocalization.com",
+      linkedin: "https://www.linkedin.com/in/fatima-yusuf-tomsu-bb5197228",
+      email: "fatima@Fytlocalization.com",
+      website: "https://fytlocalization.com",
     },
   },
   {
     id: "team-2",
-    name: "Hamdan Bello",
-    role: "Head of African Language Operations",
-    bio: "Specializing in Bantu morphology, Swahili dialect variation, and simultaneous conference interpretation systems for inter-governmental summits.",
-    image: "/images/interpretation.jpg", // TODO: replace with client asset
+    name: "Abdulmuiz Zaid",
+    role: "Chief of Operations (COO)",
+    bio: "Leading cross-border operations, localization delivery pipelines, resource allocation, and strategic execution across all enterprise translation and AI projects.",
+    image: "/images/Zaid.jpeg",
     socials: {
-      linkedin: "https://www.linkedin.com/company/fytlocalization/",
-      x: "https://x.com/fytlocalization",
-      email: "admin@fytlocalization.com",
+      linkedin: "https://www.linkedin.com/in/zaid-abdulmuiz-aaa908393",
+      x: "https://www.x.com/prof6795",
+      email: "Vm@fytlocalization.com",
     },
   },
   {
     id: "team-3",
-    name: "Dorathy Adeyemi",
-    role: "Lead QA & Legal Localization Coordinator",
-    bio: "Expert in legal terminology harmonization, civic public education translation, and multi-tier Human-in-the-Loop review protocols.",
-    image: "/images/translation.jpg", // TODO: replace with client asset
+    name: "Sanusi Muhammad",
+    role: "Social Media Manager",
+    bio: "Directing brand storytelling, digital community engagement, and strategic media outreach to champion African language technology worldwide.",
+    image: "/images/Sanusi.jpeg",
     socials: {
-      linkedin: "https://www.linkedin.com/company/fytlocalization/",
       email: "admin@fytlocalization.com",
-    },
-  },
-  {
-    id: "team-4",
-    name: "Spectre Mensah",
-    role: "Director of AI Datasets & Speech Engineering",
-    bio: "Spearheading audio, video, and egocentric dataset collection pipelines for automated speech recognition and large language model instruction tuning.",
-    image: "/images/localization.jpg", // TODO: replace with client asset
-    socials: {
-      linkedin: "https://www.linkedin.com/company/fytlocalization/",
-      x: "https://x.com/fytlocalization",
     },
   },
 ];
@@ -99,21 +92,21 @@ export const INITIAL_CERTIFICATIONS: Certification[] = [
     title: "CAC-Registered Company in Nigeria",
     issuer: "Corporate Affairs Commission (Federal Republic of Nigeria)",
     year: "Active Good Standing",
-    image: "/images/transcription.jpg",
+    image: "/images/cac.jpg",
   },
   {
     id: "cert-ndpc",
     title: "Nigeria Data Protection Commission (NDPC) Licensed & Compliant",
     issuer: "Federal Government of Nigeria (Official NDPC License)",
     year: "Licensed & Verified",
-    image: "/images/translation.jpg",
+    image: "/images/ndpc.jpg",
   },
   {
     id: "cert-ndpa-gdpr",
     title: "NDPA & GDPR-Aligned Data Protection Practices",
     issuer: "Nigeria Data Protection Act & EU GDPR Governance Standard",
     year: "Compliant Framework",
-    image: "/images/subtitle.jpg",
+    image: "/images/NDPA_Logo_800x800.png",
   },
 ];
 
@@ -192,7 +185,7 @@ export const INITIAL_PAST_PROJECTS: PastProject[] = [
   },
 ];
 
-const STORAGE_KEY = "fyt_about_data_store_v4";
+const STORAGE_KEY = "fyt_about_data_store_v7";
 const EVENT_KEY = "fyt_about_data_updated";
 
 export function getStoredAboutData() {
@@ -216,7 +209,20 @@ export function getStoredAboutData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(init));
       return init;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!parsed.team || parsed.team.length !== INITIAL_TEAM.length || parsed.team[0]?.name !== INITIAL_TEAM[0].name) {
+      parsed.team = INITIAL_TEAM;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    if (
+      !parsed.certifications ||
+      parsed.certifications.length !== INITIAL_CERTIFICATIONS.length ||
+      parsed.certifications[2]?.image !== INITIAL_CERTIFICATIONS[2].image
+    ) {
+      parsed.certifications = INITIAL_CERTIFICATIONS;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
   } catch {
     return {
       team: INITIAL_TEAM,

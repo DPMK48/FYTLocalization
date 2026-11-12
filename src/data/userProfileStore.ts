@@ -256,6 +256,40 @@ export function useUserProfile() {
     };
   }, [syncState]);
 
+  // Sync messages from MongoDB Atlas periodically
+  useEffect(() => {
+    if (!profile.nickname) return;
+
+    const fetchLiveMessages = () => {
+      fetch(`/api/messages?user=${encodeURIComponent(profile.nickname)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && Array.isArray(data.messages)) {
+            const mapped: DirectMessage[] = data.messages.map((m: any) => ({
+              id: m._id || `msg-${m.createdAt}`,
+              sender:
+                m.sender.toLowerCase() === profile.nickname.toLowerCase()
+                  ? "You"
+                  : m.sender,
+              recipient: m.recipient,
+              text: m.text,
+              time: m.createdAt
+                ? new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "Recent",
+              isSelf: m.sender.toLowerCase() === profile.nickname.toLowerCase(),
+            }));
+            saveStoredMessages(mapped);
+            setMessages(mapped);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchLiveMessages();
+    const msgTimer = setInterval(fetchLiveMessages, 4000);
+    return () => clearInterval(msgTimer);
+  }, [profile.nickname]);
+
   const updateProfile = (partial: Partial<UserProfile>) => {
     const updated = saveStoredProfile(partial);
     setProfile(updated);
@@ -285,12 +319,14 @@ export function useUserProfile() {
     setNotifications(updated);
   };
 
-  const sendMessage = (text: string, recipient: string = "dorathy") => {
+  const sendMessage = async (text: string, recipient: string) => {
+    if (!text.trim() || !recipient) return;
+
     const newMsg: DirectMessage = {
       id: `msg-${Date.now()}`,
       sender: "You",
       recipient,
-      text,
+      text: text.trim(),
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       isSelf: true,
     };
@@ -298,28 +334,22 @@ export function useUserProfile() {
     saveStoredMessages(updated);
     setMessages(updated);
 
-    setTimeout(() => {
-      const replies = [
-        `Received! Thanks for following up on this, ${profile.firstName}.`,
-        `Got your message! I'm on it and will update the task tracker shortly.`,
-        `Checked and agreed. Let's sync on this at our weekly editorial review.`,
-      ];
-      const randomReply = replies[Math.floor(Math.random() * replies.length)];
-      const botMsg: DirectMessage = {
-        id: `msg-${Date.now() + 1}`,
-        sender: recipient,
-        recipient: profile.nickname,
-        text: randomReply,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isSelf: false,
-      };
-      const withBot = [...getStoredMessages(), botMsg];
-      saveStoredMessages(withBot);
-      setMessages(withBot);
-    }, 1200);
+    try {
+      await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: profile.nickname,
+          recipient,
+          text: text.trim(),
+        }),
+      });
+    } catch (err) {
+      console.warn("Live message send error", err);
+    }
   };
 
-  const sendMassMessage = (text: string, recipients: string[]) => {
+  const sendMassMessage = async (text: string, recipients: string[]) => {
     if (!profile.isAdmin) {
       console.warn("Unauthorized: only users with admin role have access to mass messaging.");
       return 0;
@@ -329,13 +359,28 @@ export function useUserProfile() {
       id: `msg-${Date.now()}-${i}`,
       sender: "You",
       recipient,
-      text,
+      text: text.trim(),
       time: timestamp,
       isSelf: true,
     }));
     const updated = [...getStoredMessages(), ...newMessages];
     saveStoredMessages(updated);
     setMessages(updated);
+
+    try {
+      await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: profile.nickname,
+          recipients,
+          text: text.trim(),
+        }),
+      });
+    } catch (err) {
+      console.warn("Live mass message send error", err);
+    }
+
     return newMessages.length;
   };
 

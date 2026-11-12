@@ -54,13 +54,6 @@ export default function ScientificApproach({ onOpenOrderModal }: ScientificAppro
             </p>
 
             <div className="pt-3 flex flex-wrap items-center gap-3">
-              <button
-                onClick={onOpenOrderModal}
-                className="px-7 py-3.5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-white bg-[#0000FF] hover:bg-[#0000dd] rounded-xl shadow-md hover:shadow-lg transition-all"
-              >
-                WHY US?
-              </button>
-
               {/* 7.2: Submit a Review Button */}
               <button
                 type="button"
