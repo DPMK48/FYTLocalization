@@ -18,11 +18,12 @@ export const SITE_CONFIG = {
   contact: {
     email: "admin@fytlocalization.com",
     supportEmail: "admin@fytlocalization.com",
-    phone: "+234 703 721 9213",
-    phoneDisplay: "+234 703 721 9213",
-    whatsappUrl: "https://wa.me/2347037219213",
-    whatsappDisplay: "+234 703 721 9213",
-    address: "Unguwar Sararkuna, Maiduguri Bypass, Bauchi State, Nigeria",
+    phone: "+234 707 975 5287",
+    phoneDisplay: "+234 707 975 5287",
+    whatsappUrl: "https://wa.me/2347079755287",
+    whatsappDisplay: "+234 707 975 5287",
+    address: "Fully Remote Organization",
+    operatingMode: "Fully Remote (Pan-African & Global)",
   },
 
   // Social Channels
@@ -30,7 +31,7 @@ export const SITE_CONFIG = {
     facebook: "https://www.facebook.com/profile.php?id=61583295960480",
     linkedin: "https://www.linkedin.com/company/fytlocalization/",
     x: "https://x.com/fytlocalization",
-    whatsapp: "https://wa.me/2347037219213",
+    whatsapp: "https://wa.me/2347079755287",
   },
 
   // Chatbot configuration (Xeelaa / "Zilla")

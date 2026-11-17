@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Send, CheckCircle2, Mail, Phone, MapPin } from "lucide-react";
+import { Send, CheckCircle2, Mail, Phone, Globe } from "lucide-react";
 import { TwitterIcon, LinkedInIcon, FacebookIcon, WhatsAppIcon } from "@/components/Icons";
 import { SITE_CONFIG } from "@/data/siteConfig";
 
@@ -73,10 +73,10 @@ export default function ContactSection() {
                   {SITE_CONFIG.contact.phoneDisplay}
                 </a>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+              <div className="flex items-center gap-3">
+                <Globe className="w-4 h-4 text-slate-500 shrink-0" />
                 <span className="text-slate-600">
-                  {SITE_CONFIG.contact.address}
+                  Fully Remote Organization (Pan-African & Global)
                 </span>
               </div>
             </div>

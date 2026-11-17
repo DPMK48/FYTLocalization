@@ -34,7 +34,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     tagline: "Culturally authentic communication across 100+ African and global languages.",
     description:
       "Enterprise linguistic solutions engineered with certified native speakers, multi-tier QA, and cultural nuance. Covering translation, transcription, interpretation, subtitling, MTPE, LQA, technical UI/UX localization, and cultural testing.",
-    image: "/images/translation.jpg",
+    image: "/images/localization-category.jpg",
     services: [
       {
         id: "translation",
@@ -106,7 +106,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         category: "localization",
         title: "MTPE (Machine Translation Post-Editing)",
         shortDesc: "Expert human refinement of AI and neural machine translations for rapid, cost-effective high-volume output.",
-        image: "/images/translation.jpg",
+        image: "/images/mtpe.jpg",
         features: [
           "Light and Full MTPE workflows according to ISO 18587",
           "Terminology harmonization with client glossaries",
@@ -122,7 +122,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         category: "localization",
         title: "Language Quality Assurance (LQA)",
         shortDesc: "Independent linguistic audits, error categorization, and metric-driven validation of translated content.",
-        image: "/images/subtitle.jpg",
+        image: "/images/lqa.jpg",
         features: [
           "MQM (Multidimensional Quality Metrics) framework",
           "Independent third-party linguistic audits",
@@ -172,7 +172,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     tagline: "Empowering next-generation artificial intelligence with diverse African speech, image, and multimedia datasets.",
     description:
       "High-fidelity human data collection, sourcing, annotation, and model evaluation at scale. Covering multimodal annotation, LLM red-teaming, voice-overs, and custom speech corpora.",
-    image: "/images/localization.jpg",
+    image: "/images/ai-data-category.jpg",
     services: [
       {
         id: "ai-data-collection",
@@ -180,7 +180,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         category: "ai-data",
         title: "AI Data Collection & Annotation",
         shortDesc: "High-fidelity multimodal data collection and precise human labeling across diverse African demographics and real-world environments.",
-        image: "/images/localization.jpg",
+        image: "/images/ai-data-collection.jpg",
         features: [
           "Image, video, text & audio dataset collection",
           "High-accuracy bounding boxes & semantic segmentation",
@@ -196,7 +196,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         category: "ai-data",
         title: "LLM / Chatbot Testing & Evaluation",
         shortDesc: "Rigorous benchmarking, red-teaming, cultural safety assessments, and human evaluation for LLMs and conversational AI.",
-        image: "/images/translation.jpg",
+        image: "/images/llm-testing.jpg",
         features: [
           "Cultural appropriateness & bias detection in African contexts",
           "Hallucination, safety, and toxicity benchmark audits",
@@ -212,7 +212,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         category: "ai-data",
         title: "AI Data Sourcing & Preparation",
         shortDesc: "End-to-end dataset discovery, cleaning, deduplication, formatting, and ingestion pipelines for machine learning models.",
-        image: "/images/transcription.jpg",
+        image: "/images/data-sourcing.jpg",
         features: [
           "Low-resource and regional language corpora discovery",
           "Audio/text normalization, cleaning, and tokenization",
@@ -228,7 +228,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         category: "ai-data",
         title: "Voice-Over & Speech Data",
         shortDesc: "Professional native studio voice-overs, dubbing, and acoustic speech corpora for automatic speech recognition (ASR) & TTS.",
-        image: "/images/africa_hero.jpg",
+        image: "/images/voice-over.jpg",
         features: [
           "Native African dialect voice actors & voice talent",
           "Studio-grade 48kHz acoustic recordings",
@@ -243,8 +243,8 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         slug: "egocentric-capture",
         category: "ai-data",
         title: "Egocentric Capture",
-        shortDesc: "First-person point-of-view (POV) camera recordings using smart glasses and head-mounted cameras.",
-        image: "/images/interpretation.jpg",
+        shortDesc: "High-fidelity audio, video, and behavioral data collection using head-mounted smartphone rigs, body-worn cameras, and POV recording devices.",
+        image: "/images/egocentric-headstrap.jpg",
         features: [
           "First-person perspective for AR/VR & robotics training",
           "Daily living tasks, cooking, artisan work, and navigation",

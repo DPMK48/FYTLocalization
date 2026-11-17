@@ -162,7 +162,7 @@ export default function Footer({ onOpenOrderModal }: FooterProps) {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  WhatsApp: {SITE_CONFIG.contact.phoneDisplay}
+                  WhatsApp: {SITE_CONFIG.contact.whatsappDisplay || SITE_CONFIG.contact.phoneDisplay}
                 </a>
               </div>
             </div>

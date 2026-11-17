@@ -32,7 +32,7 @@ export const INITIAL_MEMBERS: Member[] = [
     joinedDate: "Aug 2026",
     lastActive: "Active now",
     isOnline: true,
-    location: "Bauchi State, Nigeria",
+    location: "Remote",
     nativeLanguage: "Hausa & English",
     languagePairs: ["Hausa ↔ English", "Arabic → Hausa", "French → English"],
     skills: ["Translation", "AI Localization", "Transcription", "Interpretation"],
@@ -46,7 +46,7 @@ export const INITIAL_MEMBERS: Member[] = [
 
 export const MEMBERS = INITIAL_MEMBERS;
 
-const STORAGE_KEY = "fyt_members_store_v3";
+const STORAGE_KEY = "fyt_members_store_v4";
 const EVENT_KEY = "fyt_members_updated";
 
 export function getStoredMembers(): Member[] {
@@ -103,7 +103,7 @@ export function useMembersStore() {
             joinedDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Aug 2026",
             lastActive: u.isOnline ? "Active now" : "Recently",
             isOnline: u.isOnline ?? true,
-            location: u.location || "Bauchi State, Nigeria",
+            location: u.location || "Remote",
             nativeLanguage: u.nativeLanguage || "Hausa & English",
             languagePairs: u.languagePairs || [],
             skills: u.skills || (u.specialty ? [u.specialty] : ["Translation"]),

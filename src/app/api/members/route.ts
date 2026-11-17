@@ -7,7 +7,7 @@ const DEFAULT_ADMIN = {
   name: "Fatima Yusuf",
   email: "admin@fytlocalization.com",
   role: "admin" as const,
-  location: "Bauchi State, Nigeria",
+  location: "Remote",
   nativeLanguage: "Hausa & English",
   languagePairs: ["Hausa ↔ English", "Arabic → Hausa", "French → English"],
   skills: ["Translation", "AI Localization", "Transcription", "Interpretation"],

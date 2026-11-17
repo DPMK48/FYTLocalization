@@ -30,9 +30,9 @@ export interface Certification {
 export interface Partner {
   id: string;
   name: string;
-  logo: string; // Logo image placeholder
-  websiteUrl: string;
-  industry: string;
+  logo?: string;
+  websiteUrl?: string;
+  industry?: string;
 }
 
 export interface PastProject {
@@ -112,39 +112,64 @@ export const INITIAL_CERTIFICATIONS: Certification[] = [
 
 export const INITIAL_PARTNERS: Partner[] = [
   {
-    id: "partner-1",
-    name: "Dadinkowa Media",
-    logo: "/images/lawan.jpg", // TODO: replace with client asset
-    websiteUrl: "https://fytlocalization.com",
-    industry: "Broadcasting & Digital Media",
+    id: "partner-talent-track",
+    name: "Talent Track",
+    industry: "Enterprise Workforce & Talent",
   },
   {
-    id: "partner-2",
-    name: "Sahel Health Initiative",
-    logo: "/images/africa_hero.jpg", // TODO: replace with client asset
-    websiteUrl: "https://fytlocalization.com",
-    industry: "Non-Governmental Healthcare",
+    id: "partner-shape-ai",
+    name: "Shape AI",
+    industry: "AI Training & Data Systems",
   },
   {
-    id: "partner-3",
-    name: "AfroSpeech AI Labs",
-    logo: "/images/localization.jpg", // TODO: replace with client asset
-    websiteUrl: "https://fytlocalization.com",
-    industry: "Machine Learning & NLP",
+    id: "partner-gif",
+    name: "GIF",
+    industry: "Global Innovation & Research",
   },
   {
-    id: "partner-4",
-    name: "Pan-African Fintech Council",
-    logo: "/images/translation.jpg", // TODO: replace with client asset
-    websiteUrl: "https://fytlocalization.com",
-    industry: "Financial Inclusion",
+    id: "partner-talentrack",
+    name: "TalentRack",
+    industry: "Technical Operations & Talent",
   },
   {
-    id: "partner-5",
-    name: "West African Cinema Collective",
-    logo: "/images/subtitle.jpg", // TODO: replace with client asset
-    websiteUrl: "https://fytlocalization.com",
-    industry: "Film & Subtitling",
+    id: "partner-translingua",
+    name: "Translingua",
+    industry: "Language Solutions & Localization",
+  },
+  {
+    id: "partner-centific",
+    name: "Centific",
+    industry: "Global AI & Data Solutions",
+  },
+  {
+    id: "partner-openai",
+    name: "OpenAI",
+    industry: "Artificial Intelligence Research",
+  },
+  {
+    id: "partner-micro-1",
+    name: "Micro 1",
+    industry: "AI Engineering & Talent",
+  },
+  {
+    id: "partner-ivision",
+    name: "iVision",
+    industry: "Digital Vision & AI Tech",
+  },
+  {
+    id: "partner-the-delta-group",
+    name: "The Delta Group",
+    industry: "Global Communications & Media",
+  },
+  {
+    id: "partner-dataocean",
+    name: "DataOcean",
+    industry: "Multimodal AI Data Solutions",
+  },
+  {
+    id: "partner-kgen",
+    name: "KGen",
+    industry: "Community & Web3 Intelligence",
   },
 ];
 
@@ -185,7 +210,7 @@ export const INITIAL_PAST_PROJECTS: PastProject[] = [
   },
 ];
 
-const STORAGE_KEY = "fyt_about_data_store_v7";
+const STORAGE_KEY = "fyt_about_data_store_v8";
 const EVENT_KEY = "fyt_about_data_updated";
 
 export function getStoredAboutData() {
@@ -220,6 +245,14 @@ export function getStoredAboutData() {
       parsed.certifications[2]?.image !== INITIAL_CERTIFICATIONS[2].image
     ) {
       parsed.certifications = INITIAL_CERTIFICATIONS;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    if (
+      !parsed.partners ||
+      parsed.partners.length !== INITIAL_PARTNERS.length ||
+      parsed.partners[0]?.name !== INITIAL_PARTNERS[0].name
+    ) {
+      parsed.partners = INITIAL_PARTNERS;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
     }
     return parsed;

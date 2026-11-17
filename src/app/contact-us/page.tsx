@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Send, CheckCircle2, Mail, Phone, MapPin, Sparkles } from "lucide-react";
+import { Send, CheckCircle2, Mail, Phone, Globe, Sparkles } from "lucide-react";
 import { TwitterIcon, LinkedInIcon, FacebookIcon, WhatsAppIcon } from "@/components/Icons";
 import { SITE_CONFIG } from "@/data/siteConfig";
 
@@ -102,11 +102,11 @@ export default function ContactUsPage() {
 
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center shrink-0 border border-slate-200">
-                    <MapPin className="w-4 h-4" />
+                    <Globe className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-slate-800 block">Headquarters</span>
-                    <span className="text-slate-600">{SITE_CONFIG.contact.address}</span>
+                    <span className="font-bold text-slate-800 block">Operations</span>
+                    <span className="text-slate-600">Fully Remote & Distributed Globally</span>
                   </div>
                 </div>
               </div>
